@@ -9,15 +9,63 @@ body {
     margin: 0;
 }
 
-dialog > form > header:first-child,
-main > header:first-child,
-#clip > header:first-child {
-    display: grid;
-    grid-template-columns: 1fr repeat(var(--button-count), min-content); 
+button {
+    padding: var(--spacing);
 }
 
-dialog > form > header:first-child {
-    --button-count: 1;
+button[type="reset"] {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+dialog {
+    width: min(65ch, 100%);
+}
+
+header {
+    background-color: oklch(1 0 0 / 0.2);
+    padding: var(--spacing);
+}
+
+header:has(button):first-child {
+    display: grid;
+    gap: var(--spacing);
+    grid-template-columns: minmax(max-content, 1fr) repeat(var(--button-count, 1), max-content);
+}
+
+dialog[open] {
+    display: grid;
+    gap: var(--spacing);
+}
+
+form {
+    display: grid;
+    gap: var(--spacing);
+}
+
+form .buttons {
+    display: grid;
+    gap: var(--spacing);
+    grid-auto-flow: column;
+    place-content: end;
+}
+
+form .control {
+    display: grid;
+    gap: var(--spacing);
+    grid-template-columns: 15ch auto;
+}
+
+form .control label {
+    text-align: end;
+}
+
+form .control input {
+    padding: var(--spacing);
+}
+
+form .control input[type="number"] {
+    width: 10ch;
 }
 
 main {
@@ -26,7 +74,7 @@ main {
 }
 
 main > header:first-child {
-    --button-count: 1;
+    --button-count: 2;
 }
 
 table {
@@ -35,7 +83,6 @@ table {
 
 tbody tr:hover {
     background-color: oklch(1 0 0 / 0.1);
-    cursor: pointer;
 }
 
 td:nth-child(3) {
@@ -55,8 +102,8 @@ tr {
     width: min(40ch, 100%);
 }
 
-#clip > header:first-child {
-    --button-count: 1;
+#ratings tbody tr:hover {
+    cursor: pointer;
 }
 
 #weight input[type="range"] {

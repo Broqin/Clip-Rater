@@ -11,6 +11,7 @@
         <main>
             <header>
                 <h1>Clip Rater</h1>
+                <button id="clips-button">Add Clips</button>
                 <button id="weights-button">Weights</button>
             </header>
             <table id="ratings">
@@ -34,7 +35,7 @@
             <dialog id="clip">
                 <header>
                     <h2>Clip</h2>
-                    <button>Close</button>
+                    <button name="action" value="close">Close</button>
                 </header>
                 <table>
                     <tbody>
@@ -45,19 +46,34 @@
                     </tbody>
                 </table>
             </dialog>
+            <dialog id="clips">
+                <header>
+                    <h2>Clips</h2>
+                    <button name="action" value="close">Close</button>
+                </header>
+                <form name="clip" method="dialog">
+                    <div class="buttons">
+                        <button name="action" type="reset" value="Reset">Reset</button>
+                        <button name="action" type="submit" value="Submit">Add</button>
+                    </div>
+                </form>
+            </dialog>
             <dialog id="weights">
+                <header>
+                    <h2>Weights</h2>
+                    <button name="action" value="close">Close</button>
+                </header>
                 <form method="dialog">
-                    <header>
-                        <h2>Weights</h2>
-                        <button>Close</button>
-                    </header>
                     <ol>
                         <li>
                             <label>Weight Name</label>
                             <input type="number" value="0">
                         </li>
                     </ol>
-                    <button type="reset">Reset</button>
+                    <div class="buttons">
+                        <button name="action" type="reset" value="Reset">Reset</button>
+                        <button name="action" type="submit" value="Apply">Apply</button>
+                    </div>
                 </form>
             </dialog>
         </main>

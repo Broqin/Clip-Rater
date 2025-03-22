@@ -1,5 +1,13 @@
+/* CLIP */
 const clipDialog = document.querySelector('#clip');
+/* CLIPS */
+const clipsButton = document.querySelector('#clips-button');
+const clipsDialog = document.querySelector('#clips');
+const clipsDialogButton = clipsDialog.querySelector('header > button');
+const clipsDialogForm = clipsDialog.querySelector('form');
+/* TABLE */
 const table = document.querySelector('table');
+/* WEIGHTS */
 const weightsButton = document.querySelector('#weights-button');
 const weightsDialog = document.querySelector('#weights');
 const weightsDialogButton = weightsDialog.querySelector('header > button');
@@ -283,31 +291,32 @@ const weights = [
     }
 ];
 
-weights.sort((a, b) => b.value - a.value);
+const listItems = weights
+    .sort((a,b) => b.value - a.value)
+    .map(weight => {
+        // create dom
+        const input = document.createElement('input');
+        const label = document.createElement('label');
+        const li = document.createElement('li');
+        const output = document.createElement('output');
+        const slug = weight.name.toLowerCase().replace(' ', '-');
+        // update input
+        input.id = slug;
+        input.max = 10;
+        input.min = -10;
+        input.type = 'range';
+        input.value = weight.value;
+        // update label
+        label.setAttribute('for', slug);
+        label.textContent = weight.name;
+        // update output
+        output.setAttribute('for', slug);
+        output.textContent = weight.value;
+        // update li
+        li.append(label, input, output);
+        li.classList.add('control');
 
-const listItems = weights.map(weight => {
-    // create dom
-    const input = document.createElement('input');
-    const label = document.createElement('label');
-    const li = document.createElement('li');
-    const output = document.createElement('output');
-    const slug = weight.name.toLowerCase().replace(' ', '-');
-    // update input
-    input.id = slug;
-    input.max = 10;
-    input.min = -10;
-    input.type = 'range';
-    input.value = weight.value;
-    // update label
-    label.setAttribute('for', slug);
-    label.textContent = weight.name;
-    // update output
-    output.setAttribute('for', slug);
-    output.textContent = weight.value;
-    // update li
-    li.append(label, input, output);
-
-    return li;
+        return li;
 });
 
 table.addEventListener('click', handleTableClick);
@@ -336,8 +345,6 @@ weightsList.replaceChildren(...listItems);
 weightsDialog.addEventListener('change', handleWeightChange);
 weightsDialogButton.addEventListener('click', handleWeightsDialog);
 weightsButton.addEventListener('click', handleWeightsDialog);
-
-console.log(rate(clips, weights));
 
 function rate(clips, weights) {
     return clips.map(clip => {
@@ -384,7 +391,7 @@ function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
 }
 
 function createRows(ratings) {
-    const rows = ratings.map((rating, index) => {
+    return ratings.map((rating, index) => {
         const row = document.createElement('tr');
         const idCell = document.createElement('td');
         const medalCell = document.createElement('td');
@@ -401,7 +408,6 @@ function createRows(ratings) {
         row.append(rankingCell, idCell, nameCell, medalCell, scoreCell);
         return row;
     });
-    return rows;
 }
 
 function handleTableClick(event) {
@@ -423,3 +429,63 @@ function handleTableClick(event) {
     clipDialog.querySelector('tbody').replaceChildren(...rows);
     clipDialog.showModal();
 }
+
+function createClipPropertyControls(properties) {
+    return properties.map(property => {
+        const div = document.createElement('div');
+        const input = document.createElement('input');
+        const label = document.createElement('label');
+        const slug = property.toLowerCase().replace(' ', '-');
+        // update elements
+        div.classList.add('control');
+        input.id = slug;
+        input.name = slug;
+        input.placeholder = 'Name';
+        input.type = 'text';
+        if(property !== 'name') {
+            input.min = 0;
+            input.placeholder = 0;
+            input.type = 'number';
+            input.value = 0;
+        }
+        label.setAttribute('for', slug);
+        label.textContent = property;
+        div.append(label, input);
+        return div;
+    })
+}
+
+clipsButton.addEventListener('click', handleClipsDialog);
+clipsDialog.addEventListener('close', handleClipsDialog);
+clipsDialogButton.addEventListener('click', handleClipsDialog);
+
+function handleClipsDialog(event) {
+
+    if(event.type === 'close') {
+        // create clip object
+        const clip = {
+            id: clips.length + 1,
+            name: clipsDialogForm.name.value,
+        }
+        console.log(clipsDialogForm.elements.length)
+        // add clip object to clips array
+        // refresh table
+    }
+
+    if(event.type !== 'click') return;
+
+    switch(event.target) {
+        case clipsButton:
+            if(!clipsDialog.open) clipsDialog.showModal();
+            break;
+
+        case clipsDialogButton:
+            clipsDialog.close();
+            break;
+    }
+}
+
+const properties = Object.keys(clips[0]).filter(key => key !== 'id');
+const propertyControls = createClipPropertyControls(properties);
+clipsDialog.showModal();
+clipsDialog.querySelector('form').prepend(...propertyControls);
