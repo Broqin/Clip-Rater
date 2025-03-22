@@ -1,0 +1,81 @@
+@import url(base.css);
+
+:root {
+    --spacing: 0.5rem;
+}
+
+body {
+    height: 100vh;
+    margin: 0;
+}
+
+dialog > form > header:first-child,
+main > header:first-child,
+#clip > header:first-child {
+    display: grid;
+    grid-template-columns: 1fr repeat(var(--button-count), min-content); 
+}
+
+dialog > form > header:first-child {
+    --button-count: 1;
+}
+
+main {
+    margin: 0 auto;
+    width: min(75ch, 100%);
+}
+
+main > header:first-child {
+    --button-count: 1;
+}
+
+table {
+    width: 100%;
+}
+
+tbody tr:hover {
+    background-color: oklch(1 0 0 / 0.1);
+    cursor: pointer;
+}
+
+td:nth-child(3) {
+    width: 100%;
+}
+
+td,
+th {
+    padding: var(--spacing);
+}
+
+tr {
+    transition: background-color 0.25s;
+}
+
+#clip {
+    width: min(40ch, 100%);
+}
+
+#clip > header:first-child {
+    --button-count: 1;
+}
+
+#weight input[type="range"] {
+    width: 40ch;
+}
+
+#weights ol {
+    display: grid;
+    gap: var(--spacing);
+    margin: 0;
+    padding: var(--spacing);
+}
+
+#weights ol li {
+    display: grid;
+    gap: var(--spacing);
+    grid-template-columns: 12ch 1fr 2ch;
+}
+
+#weights output {
+    text-align: end;
+}

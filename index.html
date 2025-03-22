@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Clip Rater</title>
+        <link href="css/index.css" rel="stylesheet">
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Clip Rater</h1>
+                <button id="weights-button">Weights</button>
+            </header>
+            <table id="ratings">
+                <caption>Ratings based on Weights</caption>
+                <thead>
+                    <tr>
+                        <th>Ranking</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Medal</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
+            <dialog id="clip">
+                <header>
+                    <h2>Clip</h2>
+                    <button>Close</button>
+                </header>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Weight Name</th>
+                            <td>Weight Value</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </dialog>
+            <dialog id="weights">
+                <form method="dialog">
+                    <header>
+                        <h2>Weights</h2>
+                        <button>Close</button>
+                    </header>
+                    <ol>
+                        <li>
+                            <label>Weight Name</label>
+                            <input type="number" value="0">
+                        </li>
+                    </ol>
+                    <button type="reset">Reset</button>
+                </form>
+            </dialog>
+        </main>
+        <script type="module" src="js/index.js"></script>
+    </body>
+</html>
