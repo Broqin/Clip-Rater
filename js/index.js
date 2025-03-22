@@ -1,3 +1,11 @@
+/*
+
+    weights are more important than the clips properties, they are all that matters in the algorithm.
+    if the clip doesn't have the property to match the weight, then determine how to handle.
+
+    weights should be shown in add clip form instead of clip properties. (refer to previous paragraph).
+*/
+
 /* CLIP */
 const clipDialog = document.querySelector('#clip');
 /* CLIPS */
@@ -291,144 +299,20 @@ const weights = [
     }
 ];
 
-const listItems = weights
-    .sort((a,b) => b.value - a.value)
-    .map(weight => {
-        // create dom
-        const input = document.createElement('input');
-        const label = document.createElement('label');
-        const li = document.createElement('li');
-        const output = document.createElement('output');
-        const slug = weight.name.toLowerCase().replace(' ', '-');
-        // update input
-        input.id = slug;
-        input.max = 10;
-        input.min = -10;
-        input.type = 'range';
-        input.value = weight.value;
-        // update label
-        label.setAttribute('for', slug);
-        label.textContent = weight.name;
-        // update output
-        output.setAttribute('for', slug);
-        output.textContent = weight.value;
-        // update li
-        li.append(label, input, output);
-        li.classList.add('control');
-
-        return li;
-});
+updateWeightsList(weights)
+updateTable(clips, weights);
 
 table.addEventListener('click', handleTableClick);
-
-const tableRows = rate(clips, weights).map((rating, index) => {
-    const row = document.createElement('tr');
-    const idCell = document.createElement('td');
-    const medalCell = document.createElement('td');
-    const nameCell = document.createElement('td');
-    const rankingCell = document.createElement('td');
-    const scoreCell = document.createElement('td');
-    // update dom
-    idCell.textContent = rating.id + 1;
-    medalCell.textContent = rating.medal;
-    nameCell.textContent = rating.name;
-    rankingCell.textContent = index + 1;
-    scoreCell.textContent = rating.score;
-    // update row
-    row.append(rankingCell, idCell, nameCell, medalCell, scoreCell);
-    return row;
-});
-
-table.tBodies[0].replaceChildren(...tableRows);
-weightsList.replaceChildren(...listItems);
-
 weightsDialog.addEventListener('change', handleWeightChange);
-weightsDialogButton.addEventListener('click', handleWeightsDialog);
 weightsButton.addEventListener('click', handleWeightsDialog);
+window.addEventListener('click', handleButtons);
 
-function rate(clips, weights) {
-    return clips.map(clip => {
+clipsButton.addEventListener('click', handleClipsDialog);
+clipsDialog.addEventListener('close', handleClipsDialog);
 
-        let score = 0;
-
-        weights.forEach(weight => {
-            const clipValue = clip[weight.name.toLowerCase().replace(' ', '')]; // Match the property name
-            if (clipValue !== undefined) {
-                score += clipValue * weight.value;
-            }
-        })
-
-        return { id: clip.id, name: clip.name, medal: medals[clip.medal], score: score };
-
-    }).sort((a, b) => b.score - a.score);
-}
-
-function handleWeightChange(event) {
-    const name = event.target.id.replace('-', '');
-    const weight = weights.find(weight => weight.name.toLowerCase().replace(' ', '') === name);
-    if(!weight) return;
-    weight.value = event.target.valueAsNumber;
-    event.target.nextElementSibling.textContent = weight.value;
-    // re rate
-    const ratings = rate(clips, weights);
-    console.log(ratings)
-    const rows = createRows(ratings);
-    table.tBodies[0].replaceChildren(...rows);
-    // update weightlist
-    // update table
-}
-
-function handleWeightsDialog() {
-    if (weightsDialog.open) {
-        weightsDialog.close();
-    } else {
-        weightsDialog.showModal();
-    }
-}
-
-function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
-    return ((x - minX) / (maxX - minX)) * (maxY - minY) + minY;
-}
-
-function createRows(ratings) {
-    return ratings.map((rating, index) => {
-        const row = document.createElement('tr');
-        const idCell = document.createElement('td');
-        const medalCell = document.createElement('td');
-        const nameCell = document.createElement('td');
-        const rankingCell = document.createElement('td');
-        const scoreCell = document.createElement('td');
-        // update dom
-        idCell.textContent = rating.id + 1;
-        medalCell.textContent = rating.medal;
-        nameCell.textContent = rating.name;
-        rankingCell.textContent = index + 1;
-        scoreCell.textContent = rating.score;
-        // update row
-        row.append(rankingCell, idCell, nameCell, medalCell, scoreCell);
-        return row;
-    });
-}
-
-function handleTableClick(event) {
-    const tr = event.target.closest('tbody tr');
-    if(!tr) return;
-    const clip = clips.find(clip => clip.name === tr.children[2].textContent);
-    if(!clip) return;
-    clipDialog.querySelector('h2').textContent = clip.name;
-    const rows = [];
-    for(const property in clip) {
-        const td = document.createElement('td');
-        const th = document.createElement('th');
-        const tr = document.createElement('tr');
-        td.textContent = clip[property];
-        th.textContent = property;
-        tr.append(th, td);
-        rows.push(tr);
-    }
-    clipDialog.querySelector('tbody').replaceChildren(...rows);
-    clipDialog.showModal();
-}
+const properties = weights.map(weight => weight.name).sort((a,b) => a.localeCompare(b));
+const propertyControls = createClipPropertyControls(properties);
+clipsDialog.querySelector('form').prepend(...propertyControls);
 
 function createClipPropertyControls(properties) {
     return properties.map(property => {
@@ -455,21 +339,57 @@ function createClipPropertyControls(properties) {
     })
 }
 
-clipsButton.addEventListener('click', handleClipsDialog);
-clipsDialog.addEventListener('close', handleClipsDialog);
-clipsDialogButton.addEventListener('click', handleClipsDialog);
+function createRows(ratings) {
+    return ratings.map((rating, index) => {
+        const row = document.createElement('tr');
+        const idCell = document.createElement('td');
+        const medalCell = document.createElement('td');
+        const nameCell = document.createElement('td');
+        const rankingCell = document.createElement('td');
+        const scoreCell = document.createElement('td');
+        // update dom
+        idCell.textContent = rating.id + 1;
+        medalCell.textContent = rating.medal;
+        nameCell.textContent = rating.name;
+        rankingCell.textContent = index + 1;
+        scoreCell.textContent = rating.score;
+        // update row
+        row.append(rankingCell, idCell, nameCell, medalCell, scoreCell);
+        return row;
+    });
+}
+
+function handleButtons(event) {
+    const button = event.target.closest('button[name="action"][value="close"]');
+    if(!button) return;
+    event.target.closest('dialog')?.close();
+}
 
 function handleClipsDialog(event) {
 
     if(event.type === 'close') {
+        const id = clips.length + 1;
         // create clip object
         const clip = {
-            id: clips.length + 1,
-            name: clipsDialogForm.name.value,
+            id: id,
+            afk: clipsDialogForm['afk'].valueAsNumber,
+            bodyshots: clipsDialogForm['body-shots'].valueAsNumber,
+            collats: clipsDialogForm['collats'].valueAsNumber,
+            exterminations: clipsDialogForm['exterminations'].valueAsNumber,
+            headshots: clipsDialogForm['head-shots'].valueAsNumber,
+            medal: clipsDialogForm['medal'].valueAsNumber,
+            melee: clipsDialogForm['melee'].valueAsNumber,
+            misses: clipsDialogForm['misses'].valueAsNumber,
+            name: 'Clip' + id,
+            noScopes: clipsDialogForm['no-scopes'].valueAsNumber,
+            shotgun: clipsDialogForm['shotgun'].valueAsNumber
         }
-        console.log(clipsDialogForm.elements.length)
-        // add clip object to clips array
-        // refresh table
+        // add clips to clips array
+        clips.push(clip);
+        // reset form
+        clipsDialogForm.reset();
+        // update table
+        updateTable(clips, weights);
     }
 
     if(event.type !== 'click') return;
@@ -478,14 +398,101 @@ function handleClipsDialog(event) {
         case clipsButton:
             if(!clipsDialog.open) clipsDialog.showModal();
             break;
-
-        case clipsDialogButton:
-            clipsDialog.close();
-            break;
     }
 }
 
-const properties = Object.keys(clips[0]).filter(key => key !== 'id');
-const propertyControls = createClipPropertyControls(properties);
-clipsDialog.showModal();
-clipsDialog.querySelector('form').prepend(...propertyControls);
+function handleTableClick(event) {
+    const tr = event.target.closest('tbody tr');
+    if(!tr) return;
+    const clip = clips.find(clip => clip.name === tr.children[2].textContent);
+    if(!clip) return;
+    clipDialog.querySelector('h2').textContent = clip.name;
+    const rows = [];
+    for(const property in clip) {
+        const td = document.createElement('td');
+        const th = document.createElement('th');
+        const tr = document.createElement('tr');
+        td.textContent = clip[property];
+        th.textContent = property;
+        tr.append(th, td);
+        rows.push(tr);
+    }
+    clipDialog.querySelector('tbody').replaceChildren(...rows);
+    clipDialog.showModal();
+}
+
+function handleWeightChange(event) {
+    const name = event.target.id.replace('-', '');
+    const weight = weights.find(weight => weight.name.toLowerCase().replace(' ', '') === name);
+    if(!weight) return;
+    weight.value = event.target.valueAsNumber;
+    event.target.nextElementSibling.textContent = weight.value;
+    // re rate
+    const ratings = rate(clips, weights);
+    console.log(ratings)
+    const rows = createRows(ratings);
+    table.tBodies[0].replaceChildren(...rows);
+    // update weightlist
+    // update table
+}
+
+function handleWeightsDialog(event) {
+    weightsDialog.showModal();
+}
+
+function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
+    return ((x - minX) / (maxX - minX)) * (maxY - minY) + minY;
+}
+
+
+function rate(clips, weights) {
+    return clips.map(clip => {
+
+        let score = 0;
+
+        weights.forEach(weight => {
+            const clipValue = clip[weight.name.toLowerCase().replace(' ', '')]; // Match the property name
+            if (clipValue !== undefined) {
+                score += clipValue * weight.value;
+            }
+        })
+
+        return { id: clip.id, name: clip.name, medal: medals[clip.medal], score: score };
+
+    }).sort((a, b) => b.score - a.score);
+}
+
+function updateTable(clips, weights) {
+    const ratings = rate(clips, weights);
+    const rows = createRows(ratings);
+    table.tBodies[0].replaceChildren(...rows);
+}
+
+function updateWeightsList(weights) {
+    const items = weights.sort((a,b) => b.value - a.value)
+    .map(weight => {
+        // create dom
+        const input = document.createElement('input');
+        const label = document.createElement('label');
+        const li = document.createElement('li');
+        const output = document.createElement('output');
+        const slug = weight.name.toLowerCase().replace(' ', '-');
+        // update input
+        input.id = slug;
+        input.max = 10;
+        input.min = -10;
+        input.type = 'range';
+        input.value = weight.value;
+        // update label
+        label.setAttribute('for', slug);
+        label.textContent = weight.name;
+        // update output
+        output.setAttribute('for', slug);
+        output.textContent = weight.value;
+        // update li
+        li.append(label, input, output);
+        li.classList.add('control');
+        return li;
+    });
+    weightsList.replaceChildren(...items);
+};
