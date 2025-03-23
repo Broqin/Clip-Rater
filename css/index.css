@@ -18,10 +18,6 @@ button[type="reset"] {
     border-color: transparent;
 }
 
-dialog {
-    width: min(65ch, 100%);
-}
-
 header {
     background-color: oklch(1 0 0 / 0.2);
     padding: var(--spacing);
@@ -85,7 +81,7 @@ tbody tr:hover {
     background-color: oklch(1 0 0 / 0.1);
 }
 
-td:nth-child(3) {
+td:nth-child(2) {
     width: 100%;
 }
 
@@ -99,7 +95,31 @@ tr {
 }
 
 #clip {
-    width: min(40ch, 100%);
+    grid-template-columns: 1fr max-content;
+}
+
+#clip form {
+    display: grid;
+    grid-template-rows: 1fr max-content;
+    height: 360px;
+}
+
+#clip ul {
+    display: grid;
+    gap: var(--spacing);
+    margin: 0;
+    overflow: hidden scroll;
+    padding: var(--spacing);
+    padding-right: 1rem;
+}
+
+#player {
+    height: 360px;
+    width: 640px;
+}
+
+#clip > header:first-child {
+    grid-column: 1 / -1;
 }
 
 #ratings tbody tr:hover {

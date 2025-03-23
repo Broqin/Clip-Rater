@@ -1,251 +1,34 @@
-/*
+import getPlaylistData from "./playlist.js";
 
-    weights are more important than the clips properties, they are all that matters in the algorithm.
-    if the clip doesn't have the property to match the weight, then determine how to handle.
+const PLAYLIST_ID = 'PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD';
+let currentId;
+let player;
 
-    weights should be shown in add clip form instead of clip properties. (refer to previous paragraph).
-*/
+window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('player', {
+        height: '360',
+        width: '640',
+        playerVars: {
+            listType: 'playlist',
+            list: PLAYLIST_ID,
+            autoplay: 0
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+};
+
+const PLAYLIST_DATA = await getPlaylistData(PLAYLIST_ID);
 
 /* CLIP */
 const clipDialog = document.querySelector('#clip');
-/* CLIPS */
-const clipsButton = document.querySelector('#clips-button');
-const clipsDialog = document.querySelector('#clips');
-const clipsDialogButton = clipsDialog.querySelector('header > button');
-const clipsDialogForm = clipsDialog.querySelector('form');
+const clipDialogForm = clipDialog.querySelector('form');
+const clipDialogList = clipDialog.querySelector('ul');
 /* TABLE */
 const table = document.querySelector('table');
 /* WEIGHTS */
-const weightsButton = document.querySelector('#weights-button');
-const weightsDialog = document.querySelector('#weights');
-const weightsDialogButton = weightsDialog.querySelector('header > button');
-const weightsList = weightsDialog.querySelector('ol');
-
-const clips = [
-    {
-        "id": 0,
-        "name": "Clip4",
-        "afk": 1,
-        "headshots": 3,
-        "noScopes": 2,
-        "collats": 0,
-        "medal": 4,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 1
-    },
-    {
-        "id": 1,
-        "name": "Clip14",
-        "afk": 0,
-        "headshots": 1,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": 4,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 1,
-        "bodyshots": 4
-    },
-    {
-        "id": 2,
-        "name": "Clip5",
-        "afk": 0,
-        "headshots": 4,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": 6,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 4
-    },
-    {
-        "id": 3,
-        "name": "Clip11",
-        "afk": 0,
-        "headshots": 0,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": null,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 0
-    },
-    {
-        "id": 4,
-        "name": "Clip6",
-        "afk": 0,
-        "headshots": 3,
-        "noScopes": 1,
-        "collats": 0,
-        "medal": 5,
-        "shotgun": 1,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 2,
-        "bodyshots": 4
-    },
-    {
-        "id": 5,
-        "name": "Clip15",
-        "afk": 2,
-        "headshots": 6,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": 8,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 3
-    },
-    {
-        "id": 6,
-        "name": "Clip1",
-        "afk": 0,
-        "headshots": 5,
-        "noScopes": 1,
-        "collats": 0,
-        "medal": 7,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 3
-    },
-    {
-        "id": 7,
-        "name": "Clip2",
-        "afk": 0,
-        "headshots": 4,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": 4,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 1,
-        "misses": 0,
-        "bodyshots": 0
-    },
-    {
-        "id": 8,
-        "name": "Clip3",
-        "afk": 0,
-        "headshots": 4,
-        "noScopes": 0,
-        "collats": 1,
-        "medal": 4,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 0
-    },
-    {
-        "id": 9,
-        "name": "Clip13",
-        "afk": 0,
-        "headshots": 5,
-        "noScopes": 4,
-        "collats": 0,
-        "medal": 6,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 1,
-        "bodyshots": 2
-    },
-    {
-        "id": 10,
-        "name": "Clip10",
-        "afk": 2,
-        "headshots": 5,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": 6,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 1,
-        "bodyshots": 3
-    },
-    {
-        "id": 11,
-        "name": "Clip12",
-        "afk": 0,
-        "headshots": 4,
-        "noScopes": 1,
-        "collats": 0,
-        "medal": 4,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 0
-    },
-    {
-        "id": 12,
-        "name": "Clip7",
-        "afk": 0,
-        "headshots": 4,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": 4,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 2,
-        "bodyshots": 0
-    },
-    {
-        "id": 13,
-        "name": "Clip9",
-        "afk": 0,
-        "headshots": 6,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": 6,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 0
-    },
-    {
-        "id": 14,
-        "name": "Clip8",
-        "afk": 0,
-        "headshots": 6,
-        "noScopes": 0,
-        "collats": 0,
-        "medal": 6,
-        "shotgun": 0,
-        "melee": 0,
-        "exterminations": 0,
-        "misses": 0,
-        "bodyshots": 0
-    }
-]
-
-const medals = {
-    2: "Double Kill",
-    3: "Triple Kill",
-    4: "Overkill",
-    5: "Killtacular",
-    6: "Killtrocity",
-    7: "Killimanjaro",
-    8: "Killtastrophe",
-    9: "Killpocalypse",
-    10: "Killionaire"
-};
-
 const weights = [
     {
         id: 1,
@@ -298,63 +81,100 @@ const weights = [
         value: 1
     }
 ];
+const weightsButton = document.querySelector('#weights-button');
+const weightsDialog = document.querySelector('#weights');
+const weightsList = weightsDialog.querySelector('ol');
 
-updateWeightsList(weights)
-updateTable(clips, weights);
+const clips = PLAYLIST_DATA.items.map(video => {
+    const clip = {
+        id: video.snippet.resourceId.videoId,
+        name: video.snippet.title
+    }
+    weights.forEach(weight => {
+        const property = weight.name.toLocaleLowerCase().replace(' ', '');
+        clip[property] = 0;
+    });
+    return clip;
+});
 
+console.log(clips.map(clip => clip.id))
+
+const medals = {
+    2: "Double Kill",
+    3: "Triple Kill",
+    4: "Overkill",
+    5: "Killtacular",
+    6: "Killtrocity",
+    7: "Killimanjaro",
+    8: "Killtastrophe",
+    9: "Killpocalypse",
+    10: "Killionaire"
+};
+
+function onPlayerReady(event) {
+    updateWeightsList(weights)
+    updateTable(clips, weights);
+}
+
+// Player state change event handler
+function onPlayerStateChange(event) {
+    // 5 = CUED
+    if(event.data === 5) {
+        const clip = clips.find(clip => clip.name === event.target.videoTitle);
+        updateClipDialog(clip);
+    }
+}
+
+clipDialogForm.addEventListener('submit', handleClipDialog);
 table.addEventListener('click', handleTableClick);
 weightsDialog.addEventListener('change', handleWeightChange);
 weightsButton.addEventListener('click', handleWeightsDialog);
 window.addEventListener('click', handleButtons);
 
-clipsButton.addEventListener('click', handleClipsDialog);
-clipsDialog.addEventListener('close', handleClipsDialog);
-
 const properties = weights.map(weight => weight.name).sort((a,b) => a.localeCompare(b));
 const propertyControls = createClipPropertyControls(properties);
-clipsDialog.querySelector('form').prepend(...propertyControls);
+clipDialogList.append(...propertyControls);
 
 function createClipPropertyControls(properties) {
     return properties.map(property => {
-        const div = document.createElement('div');
+        const li = document.createElement('li');
         const input = document.createElement('input');
         const label = document.createElement('label');
         const slug = property.toLowerCase().replace(' ', '-');
-        // update elements
-        div.classList.add('control');
+        // update input
         input.id = slug;
         input.name = slug;
-        input.placeholder = 'Name';
-        input.type = 'text';
-        if(property !== 'name') {
-            input.min = 0;
-            input.placeholder = 0;
-            input.type = 'number';
-            input.value = 0;
+        input.min = 0;
+        input.placeholder = 0;
+        input.setAttribute('value', 0);
+        input.type = 'number';
+        if(property === 'Medal') {
+            input.max = 10;
         }
+        // update label
         label.setAttribute('for', slug);
         label.textContent = property;
-        div.append(label, input);
-        return div;
+        // update li
+        li.classList.add('control');
+        li.append(label, input);
+        return li;
     })
 }
 
 function createRows(ratings) {
     return ratings.map((rating, index) => {
         const row = document.createElement('tr');
-        const idCell = document.createElement('td');
         const medalCell = document.createElement('td');
         const nameCell = document.createElement('td');
         const rankingCell = document.createElement('td');
         const scoreCell = document.createElement('td');
         // update dom
-        idCell.textContent = rating.id + 1;
-        medalCell.textContent = rating.medal;
+        medalCell.textContent = rating.medal || 0;
         nameCell.textContent = rating.name;
         rankingCell.textContent = index + 1;
-        scoreCell.textContent = rating.score;
+        scoreCell.textContent = rating.score || 0;
         // update row
-        row.append(rankingCell, idCell, nameCell, medalCell, scoreCell);
+        row.append(rankingCell, nameCell, medalCell, scoreCell);
         return row;
     });
 }
@@ -365,59 +185,20 @@ function handleButtons(event) {
     event.target.closest('dialog')?.close();
 }
 
-function handleClipsDialog(event) {
-
-    if(event.type === 'close') {
-        const id = clips.length + 1;
-        // create clip object
-        const clip = {
-            id: id,
-            afk: clipsDialogForm['afk'].valueAsNumber,
-            bodyshots: clipsDialogForm['body-shots'].valueAsNumber,
-            collats: clipsDialogForm['collats'].valueAsNumber,
-            exterminations: clipsDialogForm['exterminations'].valueAsNumber,
-            headshots: clipsDialogForm['head-shots'].valueAsNumber,
-            medal: clipsDialogForm['medal'].valueAsNumber,
-            melee: clipsDialogForm['melee'].valueAsNumber,
-            misses: clipsDialogForm['misses'].valueAsNumber,
-            name: 'Clip' + id,
-            noScopes: clipsDialogForm['no-scopes'].valueAsNumber,
-            shotgun: clipsDialogForm['shotgun'].valueAsNumber
-        }
-        // add clips to clips array
-        clips.push(clip);
-        // reset form
-        clipsDialogForm.reset();
-        // update table
-        updateTable(clips, weights);
-    }
-
-    if(event.type !== 'click') return;
-
-    switch(event.target) {
-        case clipsButton:
-            if(!clipsDialog.open) clipsDialog.showModal();
-            break;
+function handleClipDialog(event) {
+    //console.log(event);
+    if(event.type === 'submit') {
+        event.preventDefault();
+        updateClip(currentId);
     }
 }
 
 function handleTableClick(event) {
     const tr = event.target.closest('tbody tr');
     if(!tr) return;
-    const clip = clips.find(clip => clip.name === tr.children[2].textContent);
+    const clip = clips.find(clip => clip.name === tr.children[1].textContent);
     if(!clip) return;
-    clipDialog.querySelector('h2').textContent = clip.name;
-    const rows = [];
-    for(const property in clip) {
-        const td = document.createElement('td');
-        const th = document.createElement('th');
-        const tr = document.createElement('tr');
-        td.textContent = clip[property];
-        th.textContent = property;
-        tr.append(th, td);
-        rows.push(tr);
-    }
-    clipDialog.querySelector('tbody').replaceChildren(...rows);
+    player.cueVideoById(clip.id);
     clipDialog.showModal();
 }
 
@@ -444,7 +225,6 @@ function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
     return ((x - minX) / (maxX - minX)) * (maxY - minY) + minY;
 }
 
-
 function rate(clips, weights) {
     return clips.map(clip => {
 
@@ -460,6 +240,31 @@ function rate(clips, weights) {
         return { id: clip.id, name: clip.name, medal: medals[clip.medal], score: score };
 
     }).sort((a, b) => b.score - a.score);
+}
+
+function updateClip(id) {
+    const clip = clips.find(clip => clip.id === id)
+    if(!clip) return;
+    propertyControls.forEach(control => {
+        const property = control.children[1].id.replace('-', '');
+        const value = control.children[1].valueAsNumber;
+        if(value !== clip[property]) {
+            clip[property] = value;
+        }
+    });
+    updateTable(clips, weights);
+    //console.log(clip)
+}
+
+function updateClipDialog(clip) {
+    console.log(clip)
+    currentId = clip.id;
+    clipDialog.querySelector('h2').textContent = clip.name;
+    propertyControls.forEach(control => {
+        const input = control.children[1];
+        const property = input.id.replace('-', '');
+        input.value = clip[property];
+    });
 }
 
 function updateTable(clips, weights) {
