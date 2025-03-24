@@ -12,6 +12,7 @@
         <main>
             <header>
                 <h1>Clip Rater</h1>
+                <button id="playlists-button" name="action" value="open">Playlists</button>
                 <button id="weights-button" name="action" value="open">Weights</button>
             </header>
             <table id="ratings">
@@ -45,12 +46,20 @@
                     </div>
                 </form>
             </dialog>
-            <dialog id="clips">
+            <dialog id="playlists">
                 <header>
-                    <h2>Clips</h2>
+                    <h2>Playlist</h2>
                     <button name="action" value="close">Close</button>
                 </header>
                 <form name="clip" method="dialog">
+                    <div class="control">
+                        <label for="playlist">Playlist</label>
+                        <input type="url" id="playlist">
+                    </div>
+                    <div class="control">
+                        <label for="saved-playlists">Saved Playlists</label>
+                        <select id="saved-playlists"></select>
+                    </div>
                     <div class="buttons">
                         <button name="action" type="reset" value="Reset">Reset</button>
                         <button name="action" type="button" value="add">Add</button>

@@ -1,31 +1,35 @@
-import getPlaylistData from "./playlist.js";
+import { getPlaylist, getPlaylistItems }  from "./playlist.js";
+import Playlists from "./storage.js";
 
-const PLAYLIST_ID = 'PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD';
-let currentId;
-let player;
+/* TO-DO
+    1. verify playlist entered into dialog#playlists is accessbile from youtube.
+    2. create loading saved playlists feature.
+    3. create saving/loaing scores feature.
+    4. possibly involve json.bin in voting feature.
+*/
 
-window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('player', {
-        height: '360',
-        width: '640',
-        playerVars: {
-            listType: 'playlist',
-            list: PLAYLIST_ID,
-            autoplay: 0
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
-};
-
-const PLAYLIST_DATA = await getPlaylistData(PLAYLIST_ID);
+/* ORDER OF OPERATIONS
+    1. await youtube api.
+    2. await saved playlists from local storage.
+    3. only show the playlists dialog.
+    4. check if the user chose or entered a valid playlist url
+    5. check if the playlist id exists in local storage "playlists"
+    6. if playlist exists load from local storage, if not get playlist data and save to local storage.
+    7. 
+*/
 
 /* CLIP */
 const clipDialog = document.querySelector('#clip');
 const clipDialogForm = clipDialog.querySelector('form');
 const clipDialogList = clipDialog.querySelector('ul');
+/* PLAYLIST */
+const PLAYLIST_ID = 'PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD';
+const playlists = new Playlists('playlists');
+const playlistsButton = document.querySelector('#playlists-button');
+const playlistsDialog = document.querySelector('#playlists');
+const playlistsSelection = playlistsDialog.querySelector('select');
+let currentId;
+let player;
 /* TABLE */
 const table = document.querySelector('table');
 /* WEIGHTS */
@@ -85,19 +89,49 @@ const weightsButton = document.querySelector('#weights-button');
 const weightsDialog = document.querySelector('#weights');
 const weightsList = weightsDialog.querySelector('ol');
 
-const clips = PLAYLIST_DATA.items.map(video => {
-    const clip = {
-        id: video.snippet.resourceId.videoId,
-        name: video.snippet.title
-    }
+window.onYouTubeIframeAPIReady = function() {
+    const playlistOptions = createPlaylistsOptions(playlists.playlists);
+    playlistsSelection.append(...playlistOptions);
+    player = new YT.Player('player', {
+        height: '360',
+        width: '640',
+        playerVars: {
+            listType: 'playlist',
+            list: PLAYLIST_ID,
+            autoplay: 0
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+};
+
+console.log(await getPlaylist(PLAYLIST_ID));
+
+if(!playlists.isPlaylist(PLAYLIST_ID)) {
+    const data = await getPlaylistItems(PLAYLIST_ID);
+    const playlist = await getPlaylist(PLAYLIST_ID);
+    const name = playlist.items[0].snippet.title;
+    const videos = data.items.map(item => (
+        {
+            id: item.snippet.resourceId.videoId,
+            name: item.snippet.title,
+            position: item.snippet.position
+        }
+    ));
+    playlists.addPlaylist(PLAYLIST_ID, name, videos);
+    playlists.save();
+}
+
+const PLAYLIST_DATA = playlists.getPlaylist(PLAYLIST_ID);
+const clips = PLAYLIST_DATA.videos.map(video => {
     weights.forEach(weight => {
         const property = weight.name.toLocaleLowerCase().replace(' ', '');
-        clip[property] = 0;
+        video[property] = 0;
     });
-    return clip;
+    return video;
 });
-
-console.log(clips.map(clip => clip.id))
 
 const medals = {
     2: "Double Kill",
@@ -112,20 +146,22 @@ const medals = {
 };
 
 function onPlayerReady(event) {
+    console.log(event)
     updateWeightsList(weights)
     updateTable(clips, weights);
 }
 
 // Player state change event handler
 function onPlayerStateChange(event) {
-    // 5 = CUED
-    if(event.data === 5) {
+    if(event.data === 1) {
         const clip = clips.find(clip => clip.name === event.target.videoTitle);
         updateClipDialog(clip);
     }
 }
 
+clipDialog.addEventListener('close', handleClipDialog)
 clipDialogForm.addEventListener('submit', handleClipDialog);
+playlistsButton.addEventListener('click', handlePlaylistsDialog);
 table.addEventListener('click', handleTableClick);
 weightsDialog.addEventListener('change', handleWeightChange);
 weightsButton.addEventListener('click', handleWeightsDialog);
@@ -161,6 +197,15 @@ function createClipPropertyControls(properties) {
     })
 }
 
+function createPlaylistsOptions(playlists) {
+    return playlists.map(playlist => {
+        const option = document.createElement('option');
+        option.textContent = playlist.name;
+        option.value = playlist.id;
+        return option;
+    })
+}
+
 function createRows(ratings) {
     return ratings.map((rating, index) => {
         const row = document.createElement('tr');
@@ -191,6 +236,14 @@ function handleClipDialog(event) {
         event.preventDefault();
         updateClip(currentId);
     }
+
+    if(event.type === 'close')  {
+        player.pauseVideo();
+    }
+}
+
+function handlePlaylistsDialog(event) {
+    playlistsDialog.showModal();
 }
 
 function handleTableClick(event) {
@@ -198,7 +251,8 @@ function handleTableClick(event) {
     if(!tr) return;
     const clip = clips.find(clip => clip.name === tr.children[1].textContent);
     if(!clip) return;
-    player.cueVideoById(clip.id);
+    player.playVideoAt(clip.position);
+    //player.pauseVideo();
     clipDialog.showModal();
 }
 
@@ -253,11 +307,9 @@ function updateClip(id) {
         }
     });
     updateTable(clips, weights);
-    //console.log(clip)
 }
 
 function updateClipDialog(clip) {
-    console.log(clip)
     currentId = clip.id;
     clipDialog.querySelector('h2').textContent = clip.name;
     propertyControls.forEach(control => {
