@@ -44,14 +44,14 @@
                     <ol></ol>
                     <div class="buttons">
                         <button name="action" type="reset" value="Reset">Reset</button>
-                        <button name="action" type="submit" value="Apply">Apply</button>
+                        <button name="action" type="button" value="Apply">Apply</button>
                     </div>
                 </form>
             </section>
             <dialog id="clip">
                 <header>
                     <h2>Clip</h2>
-                    <button name="action" value="close">Close</button>
+                    <button class="close icon" name="action" value="close">Close</button>
                 </header>
                 <div id="player"></div>
                 <form method="dialog">
@@ -64,18 +64,18 @@
             </dialog>
             <dialog id="playlists">
                 <header>
-                    <h2>Playlist</h2>
-                    <button name="action" value="close">Close</button>
+                    <h2>What playlist are we using?</h2>
+                    <button class="close icon" name="action" value="close">Close</button>
                 </header>
                 <form method="dialog" class="search">
-                    <label class="sr-only" for="playlist">Load Playlist</label>
+                    <label for="playlist">Fetch Playlist</label>
                     <input type="url" id="playlist" placeholder="https://www.youtube.com/playlist?list=PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD">
                     <button class="close icon" name="action" type="reset" value="Reset">Reset</button>
                     <button class="search icon" name="action" type="button" value="add">Add</button>
                 </form>
                 <form method="dialog">
                     <div class="control">
-                        <label for="saved-playlists">Saved Playlists</label>
+                        <label for="saved-playlists">Load Playlist</label>
                         <select id="saved-playlists"></select>
                     </div>
                 </form>
