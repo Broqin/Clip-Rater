@@ -132,6 +132,7 @@ tr {
 #content {
     display: grid;
     gap: var(--spacing);
+    overflow: hidden auto;
     padding: var(--spacing)
 }
 
@@ -159,13 +160,11 @@ tr {
 #weights {
     display: grid;
     grid-template-rows: auto 1fr;
-    overflow: hidden;
 }
 
 #weights form {
     display: grid;
     grid-template-rows: 1fr auto;
-    overflow: hidden;
 }
 
 #weight input[type="range"] {
@@ -177,7 +176,6 @@ tr {
     gap: var(--spacing);
     height: 100%;
     margin: 0;
-    overflow: hidden scroll;
     padding: var(--spacing);
 }
 
@@ -240,5 +238,14 @@ tr {
     #content {
         grid-template-columns: 1fr auto;
         overflow: hidden;
+    }
+
+    #weights,
+    #weights form {
+        overflow: hidden;
+    }
+
+    #weights form ol {
+        overflow: hidden auto;
     }
 }
