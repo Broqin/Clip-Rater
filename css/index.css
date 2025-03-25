@@ -5,8 +5,11 @@
 }
 
 body {
+    display: grid;
+    grid-template-rows: auto 1fr;
     height: 100vh;
     margin: 0;
+    overflow: hidden;
 }
 
 button {
@@ -18,15 +21,23 @@ button[type="reset"] {
     border-color: transparent;
 }
 
+h1 {
+    white-space: nowrap;
+}
+
 header {
-    background-color: oklch(1 0 0 / 0.2);
+    background-color: oklch(1 0 0 / 0.15);
     padding: var(--spacing);
 }
 
 header:has(button):first-child {
     display: grid;
     gap: var(--spacing);
-    grid-template-columns: minmax(max-content, 1fr) repeat(var(--button-count, 1), max-content);
+    grid-template-columns: 1fr repeat(var(--button-count, 1), auto);
+}
+
+dialog {
+    padding: var(--spacing);
 }
 
 dialog[open] {
@@ -39,6 +50,20 @@ form {
     gap: var(--spacing);
 }
 
+form.search {
+    background-color: oklch(0 0 0 / 0.5);
+    border-radius: 0.5rem;
+    gap: 0;
+    grid-template-areas: "input reset submit";
+    grid-template-columns: 1fr auto auto;
+}
+
+form.search button,
+form.search input {
+    background-color: transparent;
+    border: 0;
+}
+
 form .buttons {
     display: grid;
     gap: var(--spacing);
@@ -49,11 +74,7 @@ form .buttons {
 form .control {
     display: grid;
     gap: var(--spacing);
-    grid-template-columns: 15ch auto;
-}
-
-form .control label {
-    text-align: end;
+    grid-template-rows: auto auto;
 }
 
 form .control input {
@@ -62,15 +83,6 @@ form .control input {
 
 form .control input[type="number"] {
     width: 10ch;
-}
-
-main {
-    margin: 0 auto;
-    width: min(75ch, 100%);
-}
-
-main > header:first-child {
-    --button-count: 2;
 }
 
 table {
@@ -113,17 +125,47 @@ tr {
     padding-right: 1rem;
 }
 
+#clip>header:first-child {
+    grid-column: 1 / -1;
+}
+
+#content {
+    display: grid;
+    gap: var(--spacing);
+    padding: var(--spacing)
+}
+
+#content > section {
+    background-color: oklch(1 0 0 / 0.1);
+}
+
+#header {
+    grid-template-columns: 1fr auto;
+}
+
 #player {
     height: 360px;
     width: 640px;
 }
 
-#clip > header:first-child {
-    grid-column: 1 / -1;
+#playlists {
+    min-width: 50ch;
 }
 
 #ratings tbody tr:hover {
     cursor: pointer;
+}
+
+#weights {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+}
+
+#weights form {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    overflow: hidden;
 }
 
 #weight input[type="range"] {
@@ -133,16 +175,70 @@ tr {
 #weights ol {
     display: grid;
     gap: var(--spacing);
+    height: 100%;
     margin: 0;
+    overflow: hidden scroll;
     padding: var(--spacing);
-}
-
-#weights ol li {
-    display: grid;
-    gap: var(--spacing);
-    grid-template-columns: 12ch 1fr 2ch;
 }
 
 #weights output {
     text-align: end;
+}
+
+#weights .control {
+    grid-template-areas: "label output" "input input";
+    grid-template-columns: 1fr 2ch;
+}
+
+#weights .control input {
+    grid-area: input;
+}
+
+#weights .control label {
+    grid-area: label;
+    text-align: start;
+}
+
+#weigths .control output {
+    grid-area: output;
+}
+
+.icon {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 1.5rem;
+    color: transparent;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+.icon.close {
+    background-image: url(/images/icons/close.png);
+}
+
+.icon.search {
+    background-image: url(/images//icons/search.png);
+}
+
+.icon.tune {
+    background-image: url(/images/icons/tune.png);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (min-width: 1280px) {
+    #content {
+        grid-template-columns: 1fr auto;
+        overflow: hidden;
+    }
 }

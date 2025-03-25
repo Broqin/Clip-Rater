@@ -9,29 +9,50 @@
         <script src="https://www.youtube.com/iframe_api"></script>
     </head>
     <body>
-        <main>
-            <header>
-                <h1>Clip Rater</h1>
-                <button id="playlists-button" name="action" value="open">Playlists</button>
-                <button id="weights-button" name="action" value="open">Weights</button>
-            </header>
-            <table id="ratings">
-                <caption>Ratings based on Weights</caption>
-                <thead>
-                    <tr>
-                        <th>Ranking</th>
-                        <th>Name</th>
-                        <th>Medal</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                </tbody>
-            </table>
+        <header id="header">
+            <h1>Clip Rater</h1>
+            <button id="playlists-button" name="action" value="open">Playlists</button>
+        </header>
+        <main id="content">
+            <section id="clips">
+                <header>
+                    <h2>Clips</h2>
+                </header>
+                <table id="ratings">
+                    <caption>Rankings based on Weights</caption>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Name</th>
+                            <th>Medal</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section id="weights">
+                <header>
+                    <h2>Weights</h2>
+                </header>
+                <form method="dialog">
+                    <ol>
+                        <li>
+                            <label>Weight Name</label>
+                            <input type="number" value="0">
+                        </li>
+                    </ol>
+                    <div class="buttons">
+                        <button name="action" type="reset" value="Reset">Reset</button>
+                        <button name="action" type="submit" value="Apply">Apply</button>
+                    </div>
+                </form>
+            </section>
             <dialog id="clip">
                 <header>
                     <h2>Clip</h2>
@@ -51,36 +72,16 @@
                     <h2>Playlist</h2>
                     <button name="action" value="close">Close</button>
                 </header>
-                <form name="clip" method="dialog">
-                    <div class="control">
-                        <label for="playlist">Playlist</label>
-                        <input type="url" id="playlist">
-                    </div>
+                <form method="dialog" class="search">
+                    <label class="sr-only" for="playlist">Load Playlist</label>
+                    <input type="url" id="playlist" placeholder="https://www.youtube.com/playlist?list=PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD">
+                    <button class="close icon" name="action" type="reset" value="Reset">Reset</button>
+                    <button class="search icon" name="action" type="button" value="add">Add</button>
+                </form>
+                <form method="dialog">
                     <div class="control">
                         <label for="saved-playlists">Saved Playlists</label>
                         <select id="saved-playlists"></select>
-                    </div>
-                    <div class="buttons">
-                        <button name="action" type="reset" value="Reset">Reset</button>
-                        <button name="action" type="button" value="add">Add</button>
-                    </div>
-                </form>
-            </dialog>
-            <dialog id="weights">
-                <header>
-                    <h2>Weights</h2>
-                    <button name="action" value="close">Close</button>
-                </header>
-                <form method="dialog">
-                    <ol>
-                        <li>
-                            <label>Weight Name</label>
-                            <input type="number" value="0">
-                        </li>
-                    </ol>
-                    <div class="buttons">
-                        <button name="action" type="reset" value="Reset">Reset</button>
-                        <button name="action" type="submit" value="Apply">Apply</button>
                     </div>
                 </form>
             </dialog>

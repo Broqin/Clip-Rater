@@ -1,23 +1,6 @@
 import { getPlaylist, getPlaylistItems }  from "./playlist.js";
 import Playlists from "./storage.js";
 
-/* TO-DO
-    1. verify playlist entered into dialog#playlists is accessbile from youtube.
-    2. create loading saved playlists feature.
-    3. create saving/loaing scores feature.
-    4. possibly involve json.bin in voting feature.
-*/
-
-/* ORDER OF OPERATIONS
-    1. await youtube api.
-    2. await saved playlists from local storage.
-    3. only show the playlists dialog.
-    4. check if the user chose or entered a valid playlist url
-    5. check if the playlist id exists in local storage "playlists"
-    6. if playlist exists load from local storage, if not get playlist data and save to local storage.
-    7. 
-*/
-
 /* CLIP */
 const clipDialog = document.querySelector('#clip');
 const clipDialogForm = clipDialog.querySelector('form');
@@ -107,8 +90,6 @@ window.onYouTubeIframeAPIReady = function() {
     });
 };
 
-console.log(await getPlaylist(PLAYLIST_ID));
-
 if(!playlists.isPlaylist(PLAYLIST_ID)) {
     const data = await getPlaylistItems(PLAYLIST_ID);
     const playlist = await getPlaylist(PLAYLIST_ID);
@@ -146,7 +127,6 @@ const medals = {
 };
 
 function onPlayerReady(event) {
-    console.log(event)
     updateWeightsList(weights)
     updateTable(clips, weights);
 }
@@ -164,7 +144,6 @@ clipDialogForm.addEventListener('submit', handleClipDialog);
 playlistsButton.addEventListener('click', handlePlaylistsDialog);
 table.addEventListener('click', handleTableClick);
 weightsDialog.addEventListener('change', handleWeightChange);
-weightsButton.addEventListener('click', handleWeightsDialog);
 window.addEventListener('click', handleButtons);
 
 const properties = weights.map(weight => weight.name).sort((a,b) => a.localeCompare(b));
@@ -269,10 +248,6 @@ function handleWeightChange(event) {
     table.tBodies[0].replaceChildren(...rows);
     // update weightlist
     // update table
-}
-
-function handleWeightsDialog(event) {
-    weightsDialog.showModal();
 }
 
 function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
