@@ -106,6 +106,7 @@ if(!playlists.isPlaylist(PLAYLIST_ID)) {
 }
 
 const PLAYLIST_DATA = playlists.getPlaylist(PLAYLIST_ID);
+console.log(PLAYLIST_DATA)
 const clips = PLAYLIST_DATA.videos.map(video => {
     weights.forEach(weight => {
         const property = weight.name.toLocaleLowerCase().replace(' ', '');
@@ -228,7 +229,9 @@ function handlePlaylistsDialog(event) {
 function handleTableClick(event) {
     const tr = event.target.closest('tbody tr');
     if(!tr) return;
-    const clip = clips.find(clip => clip.name === tr.children[1].textContent);
+    const name = tr.children[1].textContent;
+    const clip = clips.find(clip => clip.name === name);
+    console.log(name, clip)
     if(!clip) return;
     player.playVideoAt(clip.position);
     //player.pauseVideo();

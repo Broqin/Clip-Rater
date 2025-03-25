@@ -1,11 +1,12 @@
 @import url(base.css);
 
 :root {
+    --foreground-color: oklch(0.2 0 0);
     --spacing: 0.5rem;
 }
 
 body {
-    background-color: oklch(0.2 0 0);
+    background-color: oklch(0.1 0 0);
     display: grid;
     grid-template-rows: auto 1fr;
     height: 100vh;
@@ -22,22 +23,12 @@ button[type="reset"] {
     border-color: transparent;
 }
 
-h1 {
-    white-space: nowrap;
-}
-
-header {
+caption {
     padding: var(--spacing);
 }
 
-header:has(button):first-child {
-    display: grid;
-    gap: var(--spacing);
-    grid-template-columns: 1fr repeat(var(--button-count, 1), auto);
-}
-
 dialog {
-    background-color: oklch(0.3 0 0);
+    background-color: var(--foreground-color);
     border-radius: 0.5rem;
     border-width: 0;
     padding: var(--spacing);
@@ -102,6 +93,20 @@ form .control input[type="number"] {
     width: 10ch;
 }
 
+h1 {
+    white-space: nowrap;
+}
+
+header {
+    padding: var(--spacing);
+}
+
+header:has(button):first-child {
+    display: grid;
+    gap: var(--spacing);
+    grid-template-columns: 1fr repeat(var(--button-count, 1), auto);
+}
+
 table {
     width: 100%;
 }
@@ -146,6 +151,14 @@ tr {
     grid-column: 1 / -1;
 }
 
+#clips {
+    grid-template-rows: auto 1fr;
+}
+
+#clips table {
+    place-self: start stretch;
+}
+
 #content {
     display: grid;
     gap: var(--spacing);
@@ -153,12 +166,16 @@ tr {
     padding: var(--spacing)
 }
 
-#content :not(dialog) header {
-    border-bottom: 1px solid oklch(0.2 0 0);
+#content > section {
+    display: grid;
+    gap: 1px;
 }
 
-#content > section {
-    background-color: oklch(1 0 0 / 0.1);
+caption,
+header,
+form,
+table {
+    background-color: var(--foreground-color);
 }
 
 #header {
@@ -188,16 +205,13 @@ tr {
     grid-template-rows: 1fr auto;
 }
 
-#weight input[type="range"] {
-    width: 40ch;
-}
-
 #weights ol {
     display: grid;
     gap: var(--spacing);
     height: 100%;
     margin: 0;
     padding: var(--spacing);
+    padding-right: 1rem; /* silly scrollbar */
 }
 
 #weights output {
@@ -234,15 +248,15 @@ tr {
 }
 
 .icon.close {
-    background-image: url(/images/icons/close.png);
+    background-image: url("../images/icons/close.png");
 }
 
 .icon.search {
-    background-image: url(/images//icons/search.png);
+    background-image: url("../images//icons/search.png");
 }
 
 .icon.tune {
-    background-image: url(/images/icons/tune.png);
+    background-image: url("../images/icons/tune.png");
 }
 
 .sr-only {
