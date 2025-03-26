@@ -84,6 +84,8 @@ const propertyControls = createClipPropertyControls(properties);
 let currentId;
 let player;
 
+// used to initialize the first example
+await createPlaylist(PLAYLIST_ID);
 const PLAYLIST_DATA = playlists.getPlaylist(PLAYLIST_ID);
 const clips = createClips(PLAYLIST_DATA);
 
@@ -112,9 +114,6 @@ table.addEventListener('click', handleTableClick);
 weightsDialog.addEventListener('change', handleWeightChange);
 window.addEventListener('click', handleButtons);
 clipDialogList.append(...propertyControls);
-
-// used to initialize the first example
-await createPlaylist(PLAYLIST_ID);
 
 function createClips(playlist) {
     return playlist.videos.map(video => {
