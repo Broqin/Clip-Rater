@@ -20,9 +20,10 @@
                 </header>
                 <table id="ratings">
                     <caption>Rankings based on Weights</caption>
-                    <thead>
+                    <thead class="sr-only">
                         <tr>
                             <th>Ranking</th>
+                            <th>Thumbnail</th>
                             <th>Name</th>
                             <th>Medal</th>
                             <th>Score</th>
@@ -69,15 +70,14 @@
                 </header>
                 <form method="dialog" class="search">
                     <label for="playlist">Fetch Playlist</label>
-                    <input type="url" id="playlist" placeholder="https://www.youtube.com/playlist?list=PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD">
+                    <input type="url" id="playlist" name="playlist" placeholder="https://www.youtube.com/playlist?list=PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD">
                     <button class="close icon" name="action" type="reset" value="Reset">Reset</button>
-                    <button class="search icon" name="action" type="button" value="add">Add</button>
+                    <button class="search icon" name="action" type="submit" value="add">Add</button>
                 </form>
-                <form method="dialog">
-                    <div class="control">
-                        <label for="saved-playlists">Load Playlist</label>
-                        <select id="saved-playlists"></select>
-                    </div>
+                <header>
+                    <h3>Saved Playlists</h3>
+                </header>
+                <ul id="saved-playlists"></ul>
                 </form>
             </dialog>
         </main>

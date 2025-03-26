@@ -1,21 +1,31 @@
 import { getPlaylist, getPlaylistItems }  from "./playlist.js";
 import Playlists from "./storage.js";
 
-/* CLIP */
+/* ELEMENTS */
 const clipDialog = document.querySelector('#clip');
 const clipDialogForm = clipDialog.querySelector('form');
 const clipDialogList = clipDialog.querySelector('ul');
-/* PLAYLIST */
-const PLAYLIST_ID = 'PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD';
-const playlists = new Playlists('playlists');
 const playlistsButton = document.querySelector('#playlists-button');
 const playlistsDialog = document.querySelector('#playlists');
-const playlistsSelection = playlistsDialog.querySelector('select');
-let currentId;
-let player;
-/* TABLE */
+const playlistsInput = playlistsDialog.querySelector('#playlist');
+const playlistsSelection = playlistsDialog.querySelector('ul');
 const table = document.querySelector('table');
-/* WEIGHTS */
+const weightsDialog = document.querySelector('#weights');
+const weightsList = weightsDialog.querySelector('ol');
+/* CONSTS */
+const medals = {
+    2: "Double Kill",
+    3: "Triple Kill",
+    4: "Overkill",
+    5: "Killtacular",
+    6: "Killtrocity",
+    7: "Killimanjaro",
+    8: "Killtastrophe",
+    9: "Killpocalypse",
+    10: "Killionaire"
+};
+const PLAYLIST_ID = 'PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD';
+const playlists = new Playlists('playlists');
 const weights = [
     {
         id: 1,
@@ -68,13 +78,16 @@ const weights = [
         value: 1
     }
 ];
-const weightsButton = document.querySelector('#weights-button');
-const weightsDialog = document.querySelector('#weights');
-const weightsList = weightsDialog.querySelector('ol');
+const properties = weights.map(weight => weight.name).sort((a,b) => a.localeCompare(b));
+const propertyControls = createClipPropertyControls(properties);
+/* LETS */
+let currentId;
+let player;
+
+const PLAYLIST_DATA = playlists.getPlaylist(PLAYLIST_ID);
+const clips = createClips(PLAYLIST_DATA);
 
 window.onYouTubeIframeAPIReady = function() {
-    const playlistOptions = createPlaylistsOptions(playlists.playlists);
-    playlistsSelection.append(...playlistOptions);
     player = new YT.Player('player', {
         height: '360',
         width: '640',
@@ -90,66 +103,59 @@ window.onYouTubeIframeAPIReady = function() {
     });
 };
 
-if(!playlists.isPlaylist(PLAYLIST_ID)) {
-    const data = await getPlaylistItems(PLAYLIST_ID);
-    const playlist = await getPlaylist(PLAYLIST_ID);
-    const name = playlist.items[0].snippet.title;
-    const videos = data.items.map(item => (
-        {
-            id: item.snippet.resourceId.videoId,
-            name: item.snippet.title,
-            position: item.snippet.position
-        }
-    ));
-    playlists.addPlaylist(PLAYLIST_ID, name, videos);
-    playlists.save();
-}
-
-const PLAYLIST_DATA = playlists.getPlaylist(PLAYLIST_ID);
-console.log(PLAYLIST_DATA)
-const clips = PLAYLIST_DATA.videos.map(video => {
-    weights.forEach(weight => {
-        const property = weight.name.toLocaleLowerCase().replace(' ', '');
-        video[property] = 0;
-    });
-    return video;
-});
-
-const medals = {
-    2: "Double Kill",
-    3: "Triple Kill",
-    4: "Overkill",
-    5: "Killtacular",
-    6: "Killtrocity",
-    7: "Killimanjaro",
-    8: "Killtastrophe",
-    9: "Killpocalypse",
-    10: "Killionaire"
-};
-
-function onPlayerReady(event) {
-    updateWeightsList(weights)
-    updateTable(clips, weights);
-}
-
-// Player state change event handler
-function onPlayerStateChange(event) {
-    if(event.data === 1) {
-        const clip = clips.find(clip => clip.name === event.target.videoTitle);
-        updateClipDialog(clip);
-    }
-}
-
 clipDialog.addEventListener('close', handleClipDialog)
 clipDialogForm.addEventListener('submit', handleClipDialog);
 playlistsButton.addEventListener('click', handlePlaylistsDialog);
+playlistsDialog.addEventListener('click', handlePlaylistsDialog);
+playlistsDialog.addEventListener('submit', handlePlaylistsDialog)
 table.addEventListener('click', handleTableClick);
 weightsDialog.addEventListener('change', handleWeightChange);
 window.addEventListener('click', handleButtons);
-
-const properties = weights.map(weight => weight.name).sort((a,b) => a.localeCompare(b));
-const propertyControls = createClipPropertyControls(properties);
 clipDialogList.append(...propertyControls);
+
+// used to initialize the first example
+await createPlaylist(PLAYLIST_ID);
+
+function createClips(playlist) {
+    return playlist.videos.map(video => {
+        weights.forEach(weight => {
+            const property = weight.name.toLocaleLowerCase().replace(' ', '');
+            video[property] = 0;
+        });
+        return video;
+    });
+}
+
+
+async function createPlaylist(id) {
+    if(!playlists.isPlaylist(id)) {
+        const data = await getPlaylistItems(id);
+        const playlist = await getPlaylist(id);
+        const name = playlist.items[0].snippet.title;
+        const videos = data.items.map(item => (
+            {
+                id: item.snippet.resourceId.videoId,
+                name: item.snippet.title,
+                position: item.snippet.position,
+                thumbnails: item.snippet.thumbnails
+            }
+        ));
+        playlists.addPlaylist(id, name, videos);
+        playlists.save();
+    }
+}
+
+function createPlaylistsOptions(playlists) {
+    return playlists.map(playlist => {
+        const button = document.createElement('button');
+        const li = document.createElement('li');
+        button.name = 'playlist';
+        button.textContent = playlist.name;
+        button.value = playlist.id;
+        li.append(button);
+        return li;
+    })
+}
 
 function createClipPropertyControls(properties) {
     return properties.map(property => {
@@ -177,15 +183,6 @@ function createClipPropertyControls(properties) {
     })
 }
 
-function createPlaylistsOptions(playlists) {
-    return playlists.map(playlist => {
-        const option = document.createElement('option');
-        option.textContent = playlist.name;
-        option.value = playlist.id;
-        return option;
-    })
-}
-
 function createRows(ratings) {
     return ratings.map((rating, index) => {
         const row = document.createElement('tr');
@@ -193,13 +190,19 @@ function createRows(ratings) {
         const nameCell = document.createElement('td');
         const rankingCell = document.createElement('td');
         const scoreCell = document.createElement('td');
+        const thumbnailImage = document.createElement('img');
+        const thumbnailCell = document.createElement('td');
         // update dom
         medalCell.textContent = rating.medal || 0;
         nameCell.textContent = rating.name;
         rankingCell.textContent = index + 1;
         scoreCell.textContent = rating.score || 0;
+        thumbnailImage.height = 60;
+        thumbnailImage.src = rating.thumbnail;
+        thumbnailImage.width = 80;
+        thumbnailCell.append(thumbnailImage);
         // update row
-        row.append(rankingCell, nameCell, medalCell, scoreCell);
+        row.append(rankingCell, thumbnailCell, nameCell, medalCell, scoreCell);
         return row;
     });
 }
@@ -223,15 +226,34 @@ function handleClipDialog(event) {
 }
 
 function handlePlaylistsDialog(event) {
-    playlistsDialog.showModal();
+    switch(event.type) {
+        case 'click':
+            if(event.target.value === 'open') {
+                playlistsDialog.showModal();
+            }
+            if(event.target.name === 'playlist') {
+                console.log(event.target.value);
+            }
+            break;
+        case 'submit':
+            // get youtube playlist id from input
+            const ID = event.target.playlist.value.split('list=')[1];
+            // proccess playlist data into local storage
+            createPlaylist(ID);
+            // reload saved playlists list
+            updatePlaylistsList(playlists.playlists);
+            // focus new playlist button
+            event.target.reset();
+            playlistsSelection.lastElementChild.focus();
+            break
+    }
 }
 
 function handleTableClick(event) {
     const tr = event.target.closest('tbody tr');
     if(!tr) return;
-    const name = tr.children[1].textContent;
+    const name = tr.children[2].textContent;
     const clip = clips.find(clip => clip.name === name);
-    console.log(name, clip)
     if(!clip) return;
     player.playVideoAt(clip.position);
     //player.pauseVideo();
@@ -257,6 +279,20 @@ function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
     return ((x - minX) / (maxX - minX)) * (maxY - minY) + minY;
 }
 
+function onPlayerReady(event) {
+    updateWeightsList(weights)
+    updateTable(clips, weights);
+    updatePlaylistsList(playlists.playlists)
+}
+
+// Player state change event handler
+function onPlayerStateChange(event) {
+    if(event.data === 1) {
+        const clip = clips.find(clip => clip.name === event.target.videoTitle);
+        updateClipDialog(clip);
+    }
+}
+
 function rate(clips, weights) {
     return clips.map(clip => {
 
@@ -269,7 +305,7 @@ function rate(clips, weights) {
             }
         })
 
-        return { id: clip.id, name: clip.name, medal: medals[clip.medal], score: score };
+        return { id: clip.id, name: clip.name, medal: medals[clip.medal], score: score, thumbnail: clip.thumbnails.default.url };
 
     }).sort((a, b) => b.score - a.score);
 }
@@ -295,6 +331,11 @@ function updateClipDialog(clip) {
         const property = input.id.replace('-', '');
         input.value = clip[property];
     });
+}
+
+function updatePlaylistsList(playlists) {
+    const playlistOptions = createPlaylistsOptions(playlists);
+    playlistsSelection.append(...playlistOptions);
 }
 
 function updateTable(clips, weights) {
