@@ -84,11 +84,6 @@ const propertyControls = createClipPropertyControls(properties);
 let currentId;
 let player;
 
-// used to initialize the first example
-await createPlaylist(PLAYLIST_ID);
-const PLAYLIST_DATA = playlists.getPlaylist(PLAYLIST_ID);
-const clips = createClips(PLAYLIST_DATA);
-
 window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('player', {
         height: '360',
@@ -115,6 +110,14 @@ weightsDialog.addEventListener('change', handleWeightChange);
 window.addEventListener('click', handleButtons);
 clipDialogList.append(...propertyControls);
 
+// used to initialize the first example
+await createPlaylist(PLAYLIST_ID);
+const PLAYLIST_DATA = playlists.getPlaylist(PLAYLIST_ID);
+const clips = createClips(PLAYLIST_DATA);
+updateWeightsList(weights)
+updateTable(clips, weights);
+updatePlaylistsList(playlists.playlists);
+
 function createClips(playlist) {
     return playlist.videos.map(video => {
         weights.forEach(weight => {
@@ -124,7 +127,6 @@ function createClips(playlist) {
         return video;
     });
 }
-
 
 async function createPlaylist(id) {
     if(!playlists.isPlaylist(id)) {
@@ -279,9 +281,7 @@ function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
 }
 
 function onPlayerReady(event) {
-    updateWeightsList(weights)
-    updateTable(clips, weights);
-    updatePlaylistsList(playlists.playlists)
+
 }
 
 // Player state change event handler
