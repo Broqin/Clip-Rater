@@ -84,10 +84,9 @@ const propertyControls = createClipPropertyControls(properties);
 let currentId;
 let player;
 
-window.onYouTubeIframeAPIReady = function() {
+window.onYouTubeIframeAPIReady = () => {
+    console.log('API READY')
     player = new YT.Player('player', {
-        height: '360',
-        width: '640',
         playerVars: {
             listType: 'playlist',
             list: PLAYLIST_ID,
@@ -98,7 +97,7 @@ window.onYouTubeIframeAPIReady = function() {
             'onStateChange': onPlayerStateChange
         }
     });
-};
+}
 
 clipDialog.addEventListener('close', handleClipDialog)
 clipDialogForm.addEventListener('submit', handleClipDialog);
@@ -187,15 +186,15 @@ function createClipPropertyControls(properties) {
 
 function createRows(ratings) {
     return ratings.map((rating, index) => {
+        const ul = document.createElement('ul');
         const row = document.createElement('tr');
-        const medalCell = document.createElement('td');
+        const attributesCell = document.createElement('td');
         const nameCell = document.createElement('td');
         const rankingCell = document.createElement('td');
         const scoreCell = document.createElement('td');
         const thumbnailImage = document.createElement('img');
         const thumbnailCell = document.createElement('td');
         // update dom
-        medalCell.textContent = rating.medal || 0;
         nameCell.textContent = rating.name;
         rankingCell.textContent = index + 1;
         scoreCell.textContent = rating.score || 0;
@@ -203,8 +202,17 @@ function createRows(ratings) {
         thumbnailImage.src = rating.thumbnail;
         thumbnailImage.width = 80;
         thumbnailCell.append(thumbnailImage);
+        ul.classList.add('pills');
+        for(const property in rating) {
+            if(['id', 'name', 'position', 'score', 'thumbnail', 'thumbnails'].includes(property)) continue;
+            if(rating[property] < 1 || rating[property] === undefined) continue;
+            const li = document.createElement('li');
+            li.textContent = `${property}: ${rating[property]}`;
+            ul.append(li);
+        }
+        attributesCell.append(ul);
         // update row
-        row.append(rankingCell, thumbnailCell, nameCell, medalCell, scoreCell);
+        row.append(rankingCell, thumbnailCell, nameCell, attributesCell, scoreCell);
         return row;
     });
 }
@@ -305,7 +313,11 @@ function rate(clips, weights) {
             }
         })
 
-        return { id: clip.id, name: clip.name, medal: medals[clip.medal], score: score, thumbnail: clip.thumbnails.default.url };
+        clip.medal = medals[clip.medal];
+        clip.score = score;
+        clip.thumbnail = clip.thumbnails.default.url
+
+        return clip;
 
     }).sort((a, b) => b.score - a.score);
 }
