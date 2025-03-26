@@ -104,7 +104,8 @@ clipDialog.addEventListener('close', handleClipDialog)
 clipDialogForm.addEventListener('submit', handleClipDialog);
 playlistsButton.addEventListener('click', handlePlaylistsDialog);
 playlistsDialog.addEventListener('click', handlePlaylistsDialog);
-playlistsDialog.addEventListener('submit', handlePlaylistsDialog)
+playlistsDialog.addEventListener('submit', handlePlaylistsDialog);
+table.addEventListener('touchend', handleTableClick);
 table.addEventListener('click', handleTableClick);
 weightsDialog.addEventListener('change', handleWeightChange);
 window.addEventListener('click', handleButtons);
