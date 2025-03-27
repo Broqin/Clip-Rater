@@ -1,14 +1,11 @@
 import { getPlaylist, getPlaylistItems }  from "./playlist.js";
 import Playlists from "./storage.js";
+import { View } from "./view.js";
 
 /* ELEMENTS */
 const clipDialog = document.querySelector('#clip');
 const clipDialogForm = clipDialog.querySelector('form');
 const clipDialogList = clipDialog.querySelector('ul');
-const playlistsButton = document.querySelector('#playlists-button');
-const playlistsDialog = document.querySelector('#playlists');
-const playlistsInput = playlistsDialog.querySelector('#playlist');
-const playlistsSelection = playlistsDialog.querySelector('ul');
 const table = document.querySelector('table');
 const weightsDialog = document.querySelector('#weights');
 const weightsList = weightsDialog.querySelector('ul');
@@ -24,7 +21,6 @@ const medals = {
     9: "Killpocalypse",
     10: "Killionaire"
 };
-const PLAYLIST_ID = 'PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD';
 const playlists = new Playlists('playlists');
 const weights = [
     {
@@ -78,8 +74,6 @@ const weights = [
         value: 1
     }
 ];
-const properties = weights.map(weight => weight.name).sort((a,b) => a.localeCompare(b));
-const propertyControls = createClipPropertyControls(properties);
 /* LETS */
 let currentId;
 let player;
@@ -89,7 +83,6 @@ window.onYouTubeIframeAPIReady = () => {
     player = new YT.Player('player', {
         playerVars: {
             listType: 'playlist',
-            list: PLAYLIST_ID,
             autoplay: 0
         },
         events: {
@@ -101,30 +94,26 @@ window.onYouTubeIframeAPIReady = () => {
 
 clipDialog.addEventListener('close', handleClipDialog)
 clipDialogForm.addEventListener('submit', handleClipDialog);
-playlistsButton.addEventListener('click', handlePlaylistsDialog);
-playlistsDialog.addEventListener('click', handlePlaylistsDialog);
-playlistsDialog.addEventListener('submit', handlePlaylistsDialog);
+View.playlistsDialog.addEventListener('click', handleSelectPlaylist);
+View.playlistsDialog.addEventListener('submit', handleAddPlaylist);
 table.addEventListener('touchend', handleTableClick);
 table.addEventListener('click', handleTableClick);
 weightsDialog.addEventListener('change', handleWeightChange);
 window.addEventListener('click', handleButtons);
-clipDialogList.append(...propertyControls);
 
-// used to initialize the first example
-await createPlaylist(PLAYLIST_ID);
-const PLAYLIST_DATA = playlists.getPlaylist(PLAYLIST_ID);
-const clips = createClips(PLAYLIST_DATA);
-updateWeightsList(weights)
-updateTable(clips, weights);
-updatePlaylistsList(playlists.playlists);
 
 function createClips(playlist) {
     return playlist.videos.map(video => {
+    // create shallow copy of video
+        const clip = {...video};
+        // apply attributes based on weights
         weights.forEach(weight => {
-            const property = weight.name.toLocaleLowerCase().replace(' ', '');
-            video[property] = 0;
+            // remove spaces from weight name to use as attribute
+            const property = weight.name.toLocaleLowerCase().replace('/\s+/g', '');
+            // set attribute
+            clip[property] = 0;
         });
-        return video;
+        return clip;
     });
 }
 
@@ -158,8 +147,9 @@ function createPlaylistsOptions(playlists) {
     })
 }
 
-function createClipPropertyControls(properties) {
-    return properties.map(property => {
+function createClipPropertyControls(weights) {
+    const properties = weights.map(weight => weight.name).sort((a,b) => a.localeCompare(b));
+    const controls = properties.map(property => {
         const li = document.createElement('li');
         const input = document.createElement('input');
         const label = document.createElement('label');
@@ -182,6 +172,7 @@ function createClipPropertyControls(properties) {
         li.append(label, input);
         return li;
     })
+    clipDialogList.append(...controls);
 }
 
 function createRows(ratings) {
@@ -235,38 +226,37 @@ function handleClipDialog(event) {
     }
 }
 
-function handlePlaylistsDialog(event) {
-    switch(event.type) {
-        case 'click':
-            if(event.target.value === 'open') {
-                playlistsDialog.showModal();
-            }
-            if(event.target.name === 'playlist') {
-                console.log(event.target.value);
-            }
-            break;
-        case 'submit':
-            // get youtube playlist id from input
-            const ID = event.target.playlist.value.split('list=')[1];
-            // proccess playlist data into local storage
-            createPlaylist(ID);
-            // reload saved playlists list
-            updatePlaylistsList(playlists.playlists);
-            // focus new playlist button
-            event.target.reset();
-            playlistsSelection.lastElementChild.focus();
-            break
-    }
+async function handleAddPlaylist(event) {
+    event.preventDefault();
+    // get youtube playlist id from input
+    const ID = event.target.playlist.value.split('list=')[1];
+    // proccess playlist data into local storage
+    await createPlaylist(ID);
+    // reload saved playlists list
+    updatePlaylistsList(playlists.playlists);
+    // focus new playlist button
+    event.target.reset();
+    playlistsSelection.lastElementChild.focus();
+}
+
+function handleSelectPlaylist(event) {
+    const button = event.target.closest('button');
+    if(!button || button.name !== 'playlist') return;
+    console.log('handling playlist select');
+    const ID = event.target.value;
+    setPlaylist(ID);
 }
 
 function handleTableClick(event) {
     const tr = event.target.closest('tbody tr');
+    console.log(tr, ' clicked')
     if(!tr) return;
     const name = tr.children[2].textContent;
-    const clip = clips.find(clip => clip.name === name);
+    const { videos } = playlists.getCurrentPlaylist();
+    const clip = videos.find(clip => clip.name === name);
+    console.log(name, clip.name);
     if(!clip) return;
     player.playVideoAt(clip.position);
-    //player.pauseVideo();
     clipDialog.showModal();
 }
 
@@ -276,28 +266,34 @@ function handleWeightChange(event) {
     if(!weight) return;
     weight.value = event.target.valueAsNumber;
     event.target.nextElementSibling.textContent = weight.value;
-    // re rate
     const ratings = rate(clips, weights);
-    console.log(ratings)
     const rows = createRows(ratings);
     table.tBodies[0].replaceChildren(...rows);
-    // update weightlist
-    // update table
+}
+
+async function initialize() {
+    updatePlaylistsList(playlists.playlists);
+    updateWeightsList(weights);
+    createClipPropertyControls(weights);
 }
 
 function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
     return ((x - minX) / (maxX - minX)) * (maxY - minY) + minY;
 }
 
-function onPlayerReady(event) {
-
+async function onPlayerReady(event) {
+    initialize();
 }
 
 // Player state change event handler
 function onPlayerStateChange(event) {
+    console.log(event);
     if(event.data === 1) {
-        const clip = clips.find(clip => clip.name === event.target.videoTitle);
-        updateClipDialog(clip);
+        const { videos } = playlists.getCurrentPlaylist();
+        const clip = videos.find(clip => clip.name === event.target.videoTitle);
+        if(clip) {
+            updateClipDialog(clip);
+        }
     }
 }
 
@@ -322,10 +318,24 @@ function rate(clips, weights) {
     }).sort((a, b) => b.score - a.score);
 }
 
+function setPlaylist(id) {
+    console.log('setting playlist to id: ', id);
+    const playlist = playlists.setPlaylist(id);
+    if(!playlist) return;
+    const clips = createClips(playlist);
+    updateTable(clips, weights);
+    player.loadPlaylist({
+        list: playlist.id,
+        listType: 'playlist',
+        index: 0
+    });
+}
+
 function updateClip(id) {
     const clip = clips.find(clip => clip.id === id)
     if(!clip) return;
-    propertyControls.forEach(control => {
+    const controls = clipDialogForm.querySelectorAll('.control');
+    controls.forEach(control => {
         const property = control.children[1].id.replace('-', '');
         const value = control.children[1].valueAsNumber;
         if(value !== clip[property]) {
@@ -336,9 +346,11 @@ function updateClip(id) {
 }
 
 function updateClipDialog(clip) {
+    console.log(clip);
     currentId = clip.id;
     clipDialog.querySelector('h2').textContent = clip.name;
-    propertyControls.forEach(control => {
+    const controls = clipDialogForm.querySelectorAll('.control');
+    controls.forEach(control => {
         const input = control.children[1];
         const property = input.id.replace('-', '');
         input.value = clip[property];
@@ -346,8 +358,8 @@ function updateClipDialog(clip) {
 }
 
 function updatePlaylistsList(playlists) {
-    const playlistOptions = createPlaylistsOptions(playlists);
-    playlistsSelection.append(...playlistOptions);
+    View.createPlaylistsOptions(playlists.length);
+    View.setPlaylistsOptions(playlists);
 }
 
 function updateTable(clips, weights) {

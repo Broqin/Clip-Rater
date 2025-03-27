@@ -1,6 +1,9 @@
 @import url(base.css);
 
 :root {
+    --bronze-color: oklch(0.25 0.05 81);
+    --gold-color: oklch(0.25 0.05 95);
+    --silver-color: oklch(0.25 0 0);
     --brand-color: oklch(53.24% 0.0424 124.34);
     --background-color: oklch(0.1 0 0);
     --foreground-color: oklch(0.2 0 0);
@@ -159,6 +162,17 @@ tbody tr {
 
 tbody tr:hover {
     background-color: oklch(1 0 0 / 0.1);
+}
+
+tbody tr:nth-child(1) {
+    background-color: var(--gold-color);
+}
+tbody tr:nth-child(2) {
+    background-color: var(--silver-color);
+}
+
+tbody tr:nth-child(3) {
+    background-color: var(--bronze-color);
 }
 
 td:has(img) {
