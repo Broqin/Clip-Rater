@@ -5,10 +5,7 @@ import { View } from "./view.js";
 /* ELEMENTS */
 const clipDialog = document.querySelector('#clip');
 const clipDialogForm = clipDialog.querySelector('form');
-const clipDialogList = clipDialog.querySelector('ul');
 const table = document.querySelector('table');
-const weightsDialog = document.querySelector('#weights');
-const weightsList = weightsDialog.querySelector('ul');
 /* CONSTS */
 const medals = {
     2: "Double Kill",
@@ -82,7 +79,6 @@ window.onYouTubeIframeAPIReady = () => {
     console.log('API READY')
     player = new YT.Player('player', {
         playerVars: {
-            listType: 'playlist',
             autoplay: 0
         },
         events: {
@@ -91,16 +87,6 @@ window.onYouTubeIframeAPIReady = () => {
         }
     });
 }
-
-clipDialog.addEventListener('close', handleClipDialog)
-clipDialogForm.addEventListener('submit', handleClipDialog);
-View.playlistsDialog.addEventListener('click', handleSelectPlaylist);
-View.playlistsDialog.addEventListener('submit', handleAddPlaylist);
-table.addEventListener('touchend', handleTableClick);
-table.addEventListener('click', handleTableClick);
-weightsDialog.addEventListener('change', handleWeightChange);
-window.addEventListener('click', handleButtons);
-
 
 function createClips(playlist) {
     return playlist.videos.map(video => {
@@ -133,46 +119,6 @@ async function createPlaylist(id) {
         playlists.addPlaylist(id, name, videos);
         playlists.save();
     }
-}
-
-function createPlaylistsOptions(playlists) {
-    return playlists.map(playlist => {
-        const button = document.createElement('button');
-        const li = document.createElement('li');
-        button.name = 'playlist';
-        button.textContent = playlist.name;
-        button.value = playlist.id;
-        li.append(button);
-        return li;
-    })
-}
-
-function createClipPropertyControls(weights) {
-    const properties = weights.map(weight => weight.name).sort((a,b) => a.localeCompare(b));
-    const controls = properties.map(property => {
-        const li = document.createElement('li');
-        const input = document.createElement('input');
-        const label = document.createElement('label');
-        const slug = property.toLowerCase().replace(' ', '-');
-        // update input
-        input.id = slug;
-        input.name = slug;
-        input.min = 0;
-        input.placeholder = 0;
-        input.setAttribute('value', 0);
-        input.type = 'number';
-        if(property === 'Medal') {
-            input.max = 10;
-        }
-        // update label
-        label.setAttribute('for', slug);
-        label.textContent = property;
-        // update li
-        li.classList.add('control');
-        li.append(label, input);
-        return li;
-    })
-    clipDialogList.append(...controls);
 }
 
 function createRows(ratings) {
@@ -233,10 +179,10 @@ async function handleAddPlaylist(event) {
     // proccess playlist data into local storage
     await createPlaylist(ID);
     // reload saved playlists list
-    updatePlaylistsList(playlists.playlists);
+    View.createPlaylistsOptions(playlists.playlists.length);
+    View.setPlaylistsOptions(playlists.playlists);
     // focus new playlist button
     event.target.reset();
-    playlistsSelection.lastElementChild.focus();
 }
 
 function handleSelectPlaylist(event) {
@@ -272,22 +218,32 @@ function handleWeightChange(event) {
 }
 
 async function initialize() {
-    updatePlaylistsList(playlists.playlists);
-    updateWeightsList(weights);
-    createClipPropertyControls(weights);
+    // initialize view
+    View.createPlaylistsOptions(playlists.playlists.length);
+    View.setPlaylistsOptions(playlists.playlists);
+    View.playlistsButton.disabled = false;
+    View.updateWeightsList(weights);
+    View.createAttributesControls(weights.length);
+    View.updateAttributeControls(weights.map(weight => ({ name: weight.name, value: 0 })));
+    // attach event listeners
+    clipDialog.addEventListener('close', handleClipDialog)
+    clipDialogForm.addEventListener('submit', handleClipDialog);
+    View.playlistsDialog.addEventListener('click', handleSelectPlaylist);
+    View.playlistsDialog.addEventListener('submit', handleAddPlaylist);
+    table.addEventListener('touchend', handleTableClick);
+    table.addEventListener('click', handleTableClick);
+    View.weightsForm.addEventListener('change', handleWeightChange);
+    window.addEventListener('click', handleButtons);
 }
 
-function normalizeToRange(x, minX, maxX, minY = 0, maxY = 10) {
-    return ((x - minX) / (maxX - minX)) * (maxY - minY) + minY;
-}
-
-async function onPlayerReady(event) {
+function onPlayerReady(event) {
+    console.log('ready', event);
     initialize();
 }
 
 // Player state change event handler
 function onPlayerStateChange(event) {
-    console.log(event);
+    console.log('change:', event);
     if(event.data === 1) {
         const { videos } = playlists.getCurrentPlaylist();
         const clip = videos.find(clip => clip.name === event.target.videoTitle);
@@ -322,18 +278,15 @@ function setPlaylist(id) {
     console.log('setting playlist to id: ', id);
     const playlist = playlists.setPlaylist(id);
     if(!playlist) return;
+    player.loadPlaylist(playlist.id);
     const clips = createClips(playlist);
     updateTable(clips, weights);
-    player.loadPlaylist({
-        list: playlist.id,
-        listType: 'playlist',
-        index: 0
-    });
 }
 
 function updateClip(id) {
     const clip = clips.find(clip => clip.id === id)
     if(!clip) return;
+    /*
     const controls = clipDialogForm.querySelectorAll('.control');
     controls.forEach(control => {
         const property = control.children[1].id.replace('-', '');
@@ -343,23 +296,21 @@ function updateClip(id) {
         }
     });
     updateTable(clips, weights);
+    */
 }
 
 function updateClipDialog(clip) {
     console.log(clip);
     currentId = clip.id;
     clipDialog.querySelector('h2').textContent = clip.name;
-    const controls = clipDialogForm.querySelectorAll('.control');
-    controls.forEach(control => {
-        const input = control.children[1];
-        const property = input.id.replace('-', '');
-        input.value = clip[property];
+    const controls = weights.map((weight, index )=> {
+        const property = weight.name.toLowerCase().replace(' ', '');
+        return { 
+            name: property,
+            value: clip[property]
+        }
     });
-}
-
-function updatePlaylistsList(playlists) {
-    View.createPlaylistsOptions(playlists.length);
-    View.setPlaylistsOptions(playlists);
+    View.updateAttributeControls(controls);
 }
 
 function updateTable(clips, weights) {
@@ -367,32 +318,3 @@ function updateTable(clips, weights) {
     const rows = createRows(ratings);
     table.tBodies[0].replaceChildren(...rows);
 }
-
-function updateWeightsList(weights) {
-    const items = weights.sort((a,b) => b.value - a.value)
-    .map(weight => {
-        // create dom
-        const input = document.createElement('input');
-        const label = document.createElement('label');
-        const li = document.createElement('li');
-        const output = document.createElement('output');
-        const slug = weight.name.toLowerCase().replace(' ', '-');
-        // update input
-        input.id = slug;
-        input.max = 10;
-        input.min = -10;
-        input.type = 'range';
-        input.value = weight.value;
-        // update label
-        label.setAttribute('for', slug);
-        label.textContent = weight.name;
-        // update output
-        output.setAttribute('for', slug);
-        output.textContent = weight.value;
-        // update li
-        li.append(label, input, output);
-        li.classList.add('control');
-        return li;
-    });
-    weightsList.replaceChildren(...items);
-};
