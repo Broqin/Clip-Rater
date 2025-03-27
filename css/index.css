@@ -34,8 +34,9 @@ caption {
 
 caption,
 header,
-form,
-tr {
+tr,
+.buttons,
+.control {
     background-color: var(--foreground-color);
 }
 
@@ -43,8 +44,10 @@ dialog {
     background-color: var(--foreground-color);
     border-radius: 0.5rem;
     border-width: 0;
+    margin: var(--spacing);
     min-width: min(50ch, 100%);
     padding: var(--spacing);
+    place-self: center;
 }
 
 dialog::backdrop {
@@ -77,7 +80,7 @@ form.search button[value="add"] {
 
 form.search button,
 form.search input {
-    background-color: oklch(0 0 0 / 0.5);
+    background-color: var(--background-color);
     border: 0;
 }
 
@@ -121,6 +124,16 @@ header:has(button):first-child {
     display: grid;
     gap: var(--spacing);
     grid-template-columns: 1fr repeat(var(--button-count, 1), auto);
+}
+
+input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"]) {
+    background-color: var(--background-color);
+    border-color: transparent;
+    border-radius: 0.5rem;
+}
+
+li.control {
+    padding-right: 1rem;
 }
 
 table {
@@ -174,23 +187,25 @@ tr {
     transition: background-color 0.25s;
 }
 
-#clip {
-    grid-template-rows: auto auto 1fr;
-}
-
-#clip form {
+#attributes {
     display: grid;
-    grid-template-rows: 1fr max-content;
+    grid-template-rows: max-content 1fr max-content;
     overflow: hidden;
 }
 
-#clip ul {
-    display: grid;
+#attributes ul {
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--spacing);
     margin: 0;
-    overflow: hidden auto;
+    overflow: hidden scroll;
     padding: var(--spacing);
     padding-right: 1rem;
+}
+
+#clip {
+    grid-template-rows: auto auto 1fr;
+    width: min(656px, 100%);
 }
 
 #clip > header:first-child {
@@ -239,21 +254,16 @@ tr {
 
 #weights {
     display: grid;
-    grid-template-rows: auto 1fr;
+    gap: 1px;
+    grid-template-rows: auto 1fr auto;
 }
 
-#weights form {
+#weights ul {
     display: grid;
-    grid-template-rows: 1fr auto;
-}
-
-#weights ol {
-    display: grid;
-    gap: var(--spacing);
+    gap: 1px;
     height: 100%;
     margin: 0;
-    padding: var(--spacing);
-    padding-right: 1rem; /* silly scrollbar */
+    padding: 0;
     place-content: start stretch;
 }
 
@@ -277,6 +287,14 @@ tr {
 
 #weigths .control output {
     grid-area: output;
+}
+
+.buttons {
+    padding: var(--spacing);
+}
+
+.control {
+    padding: var(--spacing);
 }
 
 .icon {
@@ -343,7 +361,7 @@ tr {
         overflow: hidden;
     }
 
-    #weights form ol {
+    #weights ul{
         overflow: hidden auto;
     }
 }

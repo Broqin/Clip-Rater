@@ -11,7 +11,7 @@ const playlistsInput = playlistsDialog.querySelector('#playlist');
 const playlistsSelection = playlistsDialog.querySelector('ul');
 const table = document.querySelector('table');
 const weightsDialog = document.querySelector('#weights');
-const weightsList = weightsDialog.querySelector('ol');
+const weightsList = weightsDialog.querySelector('ul');
 /* CONSTS */
 const medals = {
     2: "Double Kill",
