@@ -30,7 +30,7 @@ export class View {
     }
 
     static updateAttributeControls(weights) {
-        console.log(weights)
+        //console.log(weights)
         const controls = [...this.attributesList.children];
         controls.forEach((control, index) => {
             // get elements
