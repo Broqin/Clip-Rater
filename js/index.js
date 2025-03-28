@@ -211,7 +211,10 @@ function handleWeightChange(event) {
     if(!weight) return;
     weight.value = event.target.valueAsNumber;
     event.target.nextElementSibling.textContent = weight.value;
-    const ratings = rate(clips, weights);
+    if(!playlists.getCurrentPlaylist()) return;
+    const { videos } = playlists.getCurrentPlaylist();
+    if(!videos) return;
+    const ratings = rate(videos, weights);
     const rows = createRows(ratings);
     table.tBodies[0].replaceChildren(...rows);
 }
