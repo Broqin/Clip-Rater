@@ -285,9 +285,10 @@ function rate(clips, weights) {
 }
 
 function setPlaylist(id) {
+    //console.log('setting playlist id', id)
     const playlist = playlists.setPlaylist(id);
     if(!playlist) return;
-    player.pauseVideo();
+    player.stopVideo();
     player.cuePlaylist({ listType: 'playlist', list: id });
     const clips = createClips(playlist.videos);
     updateTable(clips, weights);
