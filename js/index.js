@@ -1,11 +1,11 @@
 import { getPlaylist, getPlaylistItems }  from "./playlist.js";
+import { Playlist } from "../models/playlist.js";
 import Playlists from "./storage.js";
 import { View } from "./view.js";
 
 /* ELEMENTS */
 const clipDialog = document.querySelector('#clip');
 const clipDialogForm = clipDialog.querySelector('form');
-const table = document.querySelector('table');
 /* CONSTS */
 const medals = {
     2: "Double Kill",
@@ -72,32 +72,39 @@ const weights = [
     }
 ];
 /* LETS */
+let clips = [];
+let playlist = null;
 let currentId;
 let player;
 
 window.onYouTubeIframeAPIReady = () => {
     //console.log('API READY')
-    player = new YT.Player('player', {
-        playerVars: {
-            autoplay: 0
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
+    try {
+        player = new YT.Player('player', {
+            playerVars: {
+                autoplay: 0
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    } catch (error) {
+        console.log('YouTube Iframe API Error', error);
+    }
 }
 
 function createClips(videos) {
     return videos.map(video => {
     // create shallow copy of video
         const clip = {...video};
+        clip.attributes = {};
         // apply attributes based on weights
         weights.forEach(weight => {
             // remove spaces from weight name to use as attribute
-            const property = weight.name.toLocaleLowerCase().replace('/\s+/g', '');
+            const property = weight.name.toLowerCase().replace(' ', '');
             // set attribute
-            clip[property] = 0;
+            clip.attributes[property] = 0;
         });
         return clip;
     });
@@ -105,55 +112,28 @@ function createClips(videos) {
 
 async function createPlaylist(id) {
     if(!playlists.isPlaylist(id)) {
-        const data = await getPlaylistItems(id);
-        const playlist = await getPlaylist(id);
-        const name = playlist.items[0].snippet.title;
-        const videos = data.items.map(item => {
-            const video = {
-                id: item.snippet.resourceId.videoId,
-                name: item.snippet.title,
-                position: item.snippet.position,
-                thumbnails: item.snippet.thumbnails
-            };
-
-            return video;
-        });
-        playlists.addPlaylist(id, name, videos);
+        const videos = await getPlaylistItems(id).then(data => data.items.map(item => ({
+            id: item.snippet.resourceId.videoId,
+            name: item.snippet.title,
+            position: item.snippet.position,
+            thumbnails: item.snippet.thumbnails
+        })));
+        const name = await getPlaylist(id).then(data => data.items[0].snippet.title);
+        const playlist = new Playlist(id, name, videos);
+        playlists.addPlaylist(playlist);
         playlists.save();
     }
 }
 
-function createRows(ratings) {
-    return ratings.map((rating, index) => {
-        const ul = document.createElement('ul');
-        const row = document.createElement('tr');
-        const attributesCell = document.createElement('td');
-        const nameCell = document.createElement('td');
-        const rankingCell = document.createElement('td');
-        const scoreCell = document.createElement('td');
-        const thumbnailImage = document.createElement('img');
-        const thumbnailCell = document.createElement('td');
-        // update dom
-        nameCell.textContent = rating.name;
-        rankingCell.textContent = index + 1;
-        scoreCell.textContent = rating.score || 0;
-        thumbnailImage.height = 60;
-        thumbnailImage.src = rating.thumbnail;
-        thumbnailImage.width = 80;
-        thumbnailCell.append(thumbnailImage);
-        ul.classList.add('pills');
-        for(const property in rating) {
-            if(['id', 'name', 'position', 'score', 'thumbnail', 'thumbnails'].includes(property)) continue;
-            if(rating[property] < 1 || rating[property] === undefined) continue;
-            const li = document.createElement('li');
-            li.textContent = `${property}: ${rating[property]}`;
-            ul.append(li);
+function createStorages() {
+    const storageNames = ['playlists', 'scores', 'weights'];
+    try {
+        for(const storageName of storageNames) {
+            localStorage.setItem(storageName, '[]');
         }
-        attributesCell.append(ul);
-        // update row
-        row.append(rankingCell, thumbnailCell, nameCell, attributesCell, scoreCell);
-        return row;
-    });
+    } catch(error) {
+        console.error('Error creating storages.');
+    }
 }
 
 function handleButtons(event) {
@@ -195,13 +175,13 @@ function handleSelectPlaylist(event) {
 }
 
 function handleTableClick(event) {
+    if(!playlist) return;
     const tr = event.target.closest('tbody tr');
     if(!tr) return;
     const name = tr.children[2].textContent;
-    const { videos } = playlists.getCurrentPlaylist();
-    const clip = videos.find(clip => clip.name === name);
-    if(!clip) return;
-    player.playVideoAt(clip.position);
+    const video = playlist.videos.find(video => video.name === name);
+    if(!video) return;
+    player.playVideoAt(video.position);
     clipDialog.showModal();
 }
 
@@ -210,16 +190,19 @@ function handleWeightChange(event) {
     const weight = weights.find(weight => weight.name.toLowerCase().replace(' ', '') === name);
     if(!weight) return;
     weight.value = event.target.valueAsNumber;
-    event.target.nextElementSibling.textContent = weight.value;
-    if(!playlists.getCurrentPlaylist()) return;
-    const { videos } = playlists.getCurrentPlaylist();
-    if(!videos) return;
-    const ratings = rate(videos, weights);
-    const rows = createRows(ratings);
-    table.tBodies[0].replaceChildren(...rows);
+}
+
+function handleWeightsInput(event) {
+    event.target.nextElementSibling.textContent = event.target.value;
+}
+
+function handleWeightsSubmit(event) {
+    event.preventDefault();
+    updateTable(clips, weights);
 }
 
 async function initialize() {
+    //console.log('initializing');
     // initialize view
     View.createPlaylistsOptions(playlists.playlists.length);
     View.setPlaylistsOptions(playlists.playlists);
@@ -230,11 +213,14 @@ async function initialize() {
     // attach event listeners
     clipDialog.addEventListener('close', handleClipDialog)
     clipDialogForm.addEventListener('submit', handleClipDialog);
+    View.playlistsButton.addEventListener('click', event => View.playlistsDialog.showModal());
     View.playlistsDialog.addEventListener('click', handleSelectPlaylist);
     View.playlistsDialog.addEventListener('submit', handleAddPlaylist);
-    table.addEventListener('touchend', handleTableClick);
-    table.addEventListener('click', handleTableClick);
+    View.rankingsTable.addEventListener('touchend', handleTableClick);
+    View.rankingsTable.addEventListener('click', handleTableClick);
     View.weightsForm.addEventListener('change', handleWeightChange);
+    View.weightsForm.addEventListener('input', handleWeightsInput);
+    View.weightsForm.addEventListener('submit', handleWeightsSubmit);
     window.addEventListener('click', handleButtons);
 }
 
@@ -258,8 +244,7 @@ function onPlayerStateChange(event) {
     if(event.data === 1) {
         //console.log('buffering', event.target.videoTitle);
         const name = event.target.videoTitle;
-        const { videos } = playlists.getCurrentPlaylist();
-        const clip = videos.find(video => video.name === name);
+        const clip = clips.find(video => video.name === name);
         if(clip) {
             updateClipDialog(clip);
         }
@@ -272,15 +257,13 @@ function rate(clips, weights) {
         let score = 0;
 
         weights.forEach(weight => {
-            const clipValue = clip[weight.name.toLowerCase().replace(' ', '')]; // Match the property name
+            const clipValue = clip.attributes[weight.name.toLowerCase().replace(' ', '')]; // Match the property name
             if (clipValue !== undefined) {
                 score += clipValue * weight.value;
             }
         })
 
-        clip.medal = medals[clip.medal];
         clip.score = score;
-        clip.thumbnail = clip.thumbnails.default.url
 
         return clip;
 
@@ -289,37 +272,36 @@ function rate(clips, weights) {
 
 function setPlaylist(id) {
     //console.log('setting playlist id', id)
-    const playlist = playlists.setPlaylist(id);
-    if(!playlist) return;
+    const { name, videos } = playlists.getPlaylist(id);
+    if(!name || !videos ) return console.error('Playlist does not exist in storage.');
+    playlist = new Playlist(id, name, videos);
     player.stopVideo();
     player.cuePlaylist({ listType: 'playlist', list: id });
-    const clips = createClips(playlist.videos);
+    clips = createClips(playlist.videos);
     updateTable(clips, weights);
 }
 
 function updateClip(id) {
-    const { videos } = playlists.getCurrentPlaylist();
-    const clip = videos.find(clip => clip.id === id);
+    const clip = clips.find(clip => clip.id === id);
     if(!clip) return;
     const controls = clipDialogForm.querySelectorAll('.control');
     controls.forEach(control => {
         const property = control.children[1].id.replace('-', '');
         const value = control.children[1].valueAsNumber;
-        if(value !== clip[property]) {
-            clip[property] = value;
-        }
+        clip.attributes[property] = value;
     });
-    updateTable(videos, weights);
+    updateTable(clips, weights);
 }
 
 function updateClipDialog(clip) {
+    if(clip.id === currentId) return;
     currentId = clip.id;
     clipDialog.querySelector('h2').textContent = clip.name;
     const controls = weights.map((weight, index )=> {
         const property = weight.name.toLowerCase().replace(' ', '');
         return { 
             name: property,
-            value: clip[property] || 0
+            value: clip.attributes[property] || 0
         }
     });
     View.updateAttributeControls(controls);
@@ -327,6 +309,17 @@ function updateClipDialog(clip) {
 
 function updateTable(clips, weights) {
     const ratings = rate(clips, weights);
-    const rows = createRows(ratings);
-    table.tBodies[0].replaceChildren(...rows);
+    const data = ratings.map(item => {
+        return {
+            id: item.id,
+            attributes: item.attributes,
+            medal: medals[item.medal],
+            name: item.name,
+            score: item.score,
+            thumbnail: item.thumbnails.default.url
+        }
+    });
+    const rows = View.createRankingRows(data.length);
+    View.rankingsTable.tBodies[0].replaceChildren(...rows);
+    View.updateRankingRows(data);
 }

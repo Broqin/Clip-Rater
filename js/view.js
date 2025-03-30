@@ -5,11 +5,22 @@ export class View {
     static playlistsButton = document.querySelector('#playlists-button');
     static playlistsDialog = document.querySelector('#playlists');
     static playlistsList = this.playlistsDialog.querySelector('ul');
+    static rankingsTable = document.querySelector('#rankings');
     static weightsForm = document.querySelector('#weights');
     static weightsList = this.weightsForm.querySelector('ul');
 
-    static {
-        this.playlistsButton.addEventListener('click', event => this.playlistsDialog.showModal());
+    // { name: example, value: 0 }
+    static createAttributes(attributes = {}) {
+        const list = [];
+        for(const property in attributes) {
+            const value = attributes[property];
+            //console.log(property, value)
+            if(value < 1) continue;
+            const item = document.createElement('li');
+            item.textContent = `${property}: ${value}`; 
+            list.push(item);
+        }
+        return list;
     }
 
     static createAttributesControls(count) {
@@ -27,6 +38,64 @@ export class View {
             controls.push(li);
         }
         this.attributesList.replaceChildren(...controls);
+    }
+
+    // { id: 0, name: 'x', }
+    static createRankingCells(video) {
+        const cells = [];
+        for(let i = 0; i < 5; i++) {
+            const cell = document.createElement('td');
+            switch(i) {
+                case 1:
+                    const image = document.createElement('img');
+                    image.classList.add('loading');
+                    image.height = 90;
+                    image.onload = event => image.classList.remove('loading');
+                    image.width = 120;
+                    cell.append(image);
+                    break;
+                case 3:
+                    const list = document.createElement('ul');
+                    list.classList.add('pills');
+                    cell.append(list);
+                    break;
+            }  
+            cells.push(cell);
+        }
+        return cells;
+    }
+
+    static createRankingRows(count) {
+        const rows = [];
+        for(let i = 0; i < count; i++) {
+            const tr = document.createElement('tr');
+            const cells = this.createRankingCells();
+            tr.append(...cells);
+            rows.push(tr);
+        }
+        return rows;
+    }
+
+    static createPlaylistsOptions(count) {
+        const options = [];
+        for(let i = 0; i < count; i++) {
+            const button = document.createElement('button');
+            const li = document.createElement('li');
+            button.name = 'playlist';
+            li.append(button);
+            options.push(li);
+        }
+        this.playlistsList.replaceChildren(...options);
+    }
+
+    static setPlaylistsOptions(playlists) {
+        const options = [...this.playlistsList.children];
+        options.forEach((option, index) => {
+            const button = option.children[0];
+            const playlist = playlists[index];
+            button.textContent = playlist.name;
+            button.value = playlist.id;
+        });
     }
 
     static updateAttributeControls(weights) {
@@ -52,25 +121,21 @@ export class View {
         });
     }
 
-    static createPlaylistsOptions(count) {
-        const options = [];
-        for(let i = 0; i < count; i++) {
-            const button = document.createElement('button');
-            const li = document.createElement('li');
-            button.name = 'playlist';
-            li.append(button);
-            options.push(li);
-        }
-        this.playlistsList.replaceChildren(...options);
-    }
-
-    static setPlaylistsOptions(playlists) {
-        const options = [...this.playlistsList.children];
-        options.forEach((option, index) => {
-            const button = option.children[0];
-            const playlist = playlists[index];
-            button.textContent = playlist.name;
-            button.value = playlist.id;
+    static updateRankingRows(data) {
+        //console.log(data);
+        const rows = [...this.rankingsTable.tBodies[0].children];
+        rows.forEach((row, index) => {
+            const attributes = this.createAttributes(data[index].attributes);
+            const image = row.querySelector('img');
+            const list = row.querySelector('ul');
+            const name = row.children[2];
+            const rank = row.children[0];
+            const score = row.children[4];
+            image.src = data[index]?.thumbnail;
+            name.textContent = data[index].name;
+            rank.textContent = index + 1;
+            score.textContent = data[index].score;
+            list.append(...attributes);
         });
     }
 
