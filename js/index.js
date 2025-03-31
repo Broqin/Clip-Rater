@@ -97,7 +97,6 @@ window.onYouTubeIframeAPIReady = () => {
 function attachEventListeners() {
     clipDialog.addEventListener('close', handleClipDialog)
     clipDialogForm.addEventListener('submit', handleClipDialog);
-    View.playlistsButton.addEventListener('click', event => View.playlistsDialog.showModal());
     View.playlistsDialog.addEventListener('click', handleSelectPlaylist);
     View.playlistsDialog.addEventListener('submit', handleAddPlaylist);
     View.rankingsTable.addEventListener('touchend', handleTableClick);
@@ -220,10 +219,6 @@ function handleWeightsSearch(event) {
     });
 }
 
-function handleWeightsToggle(event) {
-    
-}
-
 function handleWeightsSubmit(event) {
     event.preventDefault();
     updateTable(clips, weights);
@@ -232,6 +227,12 @@ function handleWeightsSubmit(event) {
 async function initialize() {
     //console.log('initializing');
     // initialize view
+    if(sessionStorage.playlist && sessionStorage.clips) {
+        playlist = JSON.parse(sessionStorage.playlist);
+        clips = JSON.parse(sessionStorage.clips);
+        player.cuePlaylist({ listType: 'playlist', list: playlist.id });
+        updateTable(clips, weights);
+    }
     View.createPlaylistsOptions(playlists.playlists.length);
     View.setPlaylistsOptions(playlists.playlists);
     View.playlistsButton.disabled = false;
@@ -297,6 +298,9 @@ function setPlaylist(id) {
     player.cuePlaylist({ listType: 'playlist', list: id });
     clips = createClips(playlist.videos);
     updateTable(clips, weights);
+
+    sessionStorage.setItem('clips', JSON.stringify(clips));
+    sessionStorage.setItem('playlist', JSON.stringify(playlist));
 }
 
 function updateClip(id) {
@@ -341,3 +345,9 @@ function updateTable(clips, weights) {
     View.rankingsTable.tBodies[0].replaceChildren(...rows);
     View.updateRankingRows(data);
 }
+
+window.addEventListener('keyup', event => {
+    if(event.key === 'Tab') {
+        console.log(document.activeElement)
+    }
+})

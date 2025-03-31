@@ -266,6 +266,7 @@ tr {
 #content > section {
     display: grid;
     gap: 1px;
+    place-content: start stretch;
 }
 
 #header {
@@ -289,17 +290,26 @@ tr {
 }
 
 #rankings {
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto 1fr;
+    place-content: start stretch;
 }
 
 #rankings tbody {
     place-content: start stretch;
 }
 
+#rankings tbody tr,
+#rankings thead tr {
+    grid-template-columns: 4ch 120px 1fr 4ch;
+}
+
 #rankings tbody tr {
     grid-template-areas: "rank thumbnail name score" "rank thumbnail medal medal";
-    grid-template-columns: 4ch max-content 1fr 4ch;
     grid-template-rows: minmax(2.5rem, auto) 1fr;
+}
+
+#rankings tbody tr:focus-within {
+    background-color: var(--hover-color);
 }
 
 #rankings tbody tr:hover {
@@ -354,6 +364,11 @@ tr {
 
 .control {
     padding: var(--spacing);
+    transition: background-color var(--animation-duration);
+}
+
+.control:focus-within {
+    background-color: var(--hover-color);
 }
 
 .control:has(label.sr-only) {
@@ -461,7 +476,12 @@ tr {
         place-content: stretch;
     }
 
+    #content > section {
+        grid-auto-rows: auto;
+    }
+
     #content,
+    #content > section,
     #rankings,
     #weights,
     #weights form {

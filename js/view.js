@@ -12,6 +12,7 @@ export class View {
     static weightsList = this.weightsForm.querySelector('ul');
 
     static {
+        this.playlistsButton.addEventListener('click', this.togglePlaylists.bind(this));
         this.weightsButton.addEventListener('click', this.toggleWeights.bind(this));
     }
 
@@ -60,6 +61,10 @@ export class View {
                     image.width = 120;
                     cell.append(image);
                     break;
+                case 2:
+                    const anchor = document.createElement('a');
+                    cell.append(anchor);
+                    break;
                 case 3:
                     const list = document.createElement('ul');
                     list.classList.add('pills');
@@ -104,6 +109,16 @@ export class View {
         });
     }
 
+    static togglePlaylists() {
+        const closed = this.weightsButton.value === 'close';
+        this.playlistsButton.value = closed ? 'open' : 'close';
+        if(closed) {
+            this.playlistsDialog.showModal();
+        } else {
+            this.playlistsDialog.close();
+        }
+    }
+
     static toggleWeights(event) {
         const condition = this.weightsButton.value === 'close';
         this.weightsButton.value = condition ? 'open' : 'close';
@@ -140,10 +155,11 @@ export class View {
             const attributes = this.createAttributes(data[index].attributes);
             const image = row.querySelector('img');
             const list = row.querySelector('ul');
-            const name = row.children[2];
+            const name = row.children[2].children[0];
             const rank = row.children[0];
             const score = row.children[4];
             image.src = data[index]?.thumbnail;
+            name.href = `?video=${data[index].id}`;
             name.textContent = data[index].name;
             rank.textContent = index + 1;
             score.textContent = data[index].score;
