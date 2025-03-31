@@ -94,6 +94,21 @@ window.onYouTubeIframeAPIReady = () => {
     }
 }
 
+function attachEventListeners() {
+    clipDialog.addEventListener('close', handleClipDialog)
+    clipDialogForm.addEventListener('submit', handleClipDialog);
+    View.playlistsButton.addEventListener('click', event => View.playlistsDialog.showModal());
+    View.playlistsDialog.addEventListener('click', handleSelectPlaylist);
+    View.playlistsDialog.addEventListener('submit', handleAddPlaylist);
+    View.rankingsTable.addEventListener('touchend', handleTableClick);
+    View.rankingsTable.addEventListener('click', handleTableClick);
+    View.weightsForm.addEventListener('change', handleWeightChange);
+    View.weightsForm.addEventListener('input', handleWeightsRanges);
+    View.weightsForm.addEventListener('submit', handleWeightsSubmit);
+    View.weightsInput.addEventListener('keyup', handleWeightsSearch);
+    window.addEventListener('click', handleButtons);
+}
+
 function createClips(videos) {
     return videos.map(video => {
     // create shallow copy of video
@@ -192,8 +207,21 @@ function handleWeightChange(event) {
     weight.value = event.target.valueAsNumber;
 }
 
-function handleWeightsInput(event) {
+function handleWeightsRanges(event) {
+    if(event.target.type !== 'range') return;
     event.target.nextElementSibling.textContent = event.target.value;
+}
+
+function handleWeightsSearch(event) {
+    console.log(event.target.value);
+    const controls = [...View.weightsList.children].forEach(control => {
+        const condition = control.children[0].textContent.toLowerCase().includes(event.target.value.toLowerCase());
+        control.classList.toggle('hidden', !condition);
+    });
+}
+
+function handleWeightsToggle(event) {
+    
 }
 
 function handleWeightsSubmit(event) {
@@ -211,17 +239,7 @@ async function initialize() {
     View.createAttributesControls(weights.length);
     View.updateAttributeControls(weights.map(weight => ({ name: weight.name, value: 0 })));
     // attach event listeners
-    clipDialog.addEventListener('close', handleClipDialog)
-    clipDialogForm.addEventListener('submit', handleClipDialog);
-    View.playlistsButton.addEventListener('click', event => View.playlistsDialog.showModal());
-    View.playlistsDialog.addEventListener('click', handleSelectPlaylist);
-    View.playlistsDialog.addEventListener('submit', handleAddPlaylist);
-    View.rankingsTable.addEventListener('touchend', handleTableClick);
-    View.rankingsTable.addEventListener('click', handleTableClick);
-    View.weightsForm.addEventListener('change', handleWeightChange);
-    View.weightsForm.addEventListener('input', handleWeightsInput);
-    View.weightsForm.addEventListener('submit', handleWeightsSubmit);
-    window.addEventListener('click', handleButtons);
+    attachEventListeners();
 }
 
 function onPlayerReady(event) {

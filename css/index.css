@@ -5,6 +5,7 @@ button:disabled {
 }
 
 :root {
+    --animation-duration: 0.25s;
     --bronze-color: oklch(0.25 0.05 81);
     --gold-color: oklch(0.25 0.05 95);
     --hover-color: oklch(0.3 0 0);
@@ -109,6 +110,7 @@ form .buttons {
 
 form .control {
     display: grid;
+    gap: var(--spacing);
     grid-template-rows: auto auto;
 }
 
@@ -138,7 +140,14 @@ img.loading {
     filter: blur(2px);
 }
 
-input[type="range"]
+input[type="number"],
+input[type="text"] {
+    padding: var(--spacing);
+}
+
+input[type="range"] {
+    margin: 0;
+}
 
 input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"]) {
     background-color: var(--background-color);
@@ -300,7 +309,13 @@ tr {
 #weights {
     display: grid;
     gap: 1px;
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-rows: auto max-content 1fr auto;
+    height: 100%;
+    transition: height var(--animation-duration);
+}
+
+#weights.hidden {
+    height: 3.5rem;
 }
 
 #weights header:first-child {
@@ -318,11 +333,6 @@ tr {
 
 #weights output {
     text-align: end;
-}
-
-#weights .control {
-    grid-template-areas: "label output" "input input";
-    grid-template-columns: 1fr 2ch;
 }
 
 #weights .control input {
@@ -344,6 +354,22 @@ tr {
 
 .control {
     padding: var(--spacing);
+}
+
+.control:has(label.sr-only) {
+    grid-template-areas: "input";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+}
+
+.control:has(input[type="range"]) {
+    grid-template-areas: "label output" "input input";
+    grid-template-columns: 1fr 2ch;
+}
+
+.control.hidden,
+.hidden {
+    display: none;
 }
 
 .icon {

@@ -7,7 +7,13 @@ export class View {
     static playlistsList = this.playlistsDialog.querySelector('ul');
     static rankingsTable = document.querySelector('#rankings');
     static weightsForm = document.querySelector('#weights');
+    static weightsButton = this.weightsForm.querySelector('header button');
+    static weightsInput = this.weightsForm.querySelector('#weight');
     static weightsList = this.weightsForm.querySelector('ul');
+
+    static {
+        this.weightsButton.addEventListener('click', this.toggleWeights.bind(this));
+    }
 
     // { name: example, value: 0 }
     static createAttributes(attributes = {}) {
@@ -96,6 +102,12 @@ export class View {
             button.textContent = playlist.name;
             button.value = playlist.id;
         });
+    }
+
+    static toggleWeights(event) {
+        const condition = this.weightsButton.value === 'close';
+        this.weightsButton.value = condition ? 'open' : 'close';
+        this.weightsForm.classList.toggle('hidden', condition);
     }
 
     static updateAttributeControls(weights) {
