@@ -2,11 +2,13 @@ export default class PlaylistsComponent {
     static button = document.querySelector('#playlists-button');
     static dialog = document.querySelector('#playlists');
     static input = document.querySelector('#playlists input');
+    static inputResetButton = document.querySelector('#playlists input ~ button[value="reset"]');
     static table = document.querySelector('#playlists table');
 
     static {
         this.button.addEventListener('click', event => this.dialog.showModal());
         this.input.addEventListener('keyup', this.searchPlaylists.bind(this));
+        this.inputResetButton.addEventListener('click', this.resetSearch.bind(this));
     }
 
     static createOptions(playlists) {
@@ -37,11 +39,17 @@ export default class PlaylistsComponent {
     }
 
     static searchPlaylists(event) {
+        const value = event ? event.target.value.toLowerCase() : '';
         [...this.table.tBodies[0].children].forEach(row => {
-            console.log(row)
-            const isValid = row.cells[0].children[0].textContent.toLowerCase().includes(event.target.value.toLowerCase());
+            const isValid = row.cells[0].children[0].textContent.toLowerCase().includes(value);
             row.classList.toggle('hidden', !isValid);
         });
+    }
+
+    static resetSearch() {
+        this.input.value = '';
+        this.searchPlaylists();
+        this.input.focus();
     }
 
 }
