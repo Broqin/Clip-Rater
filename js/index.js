@@ -1,3 +1,4 @@
+import { Attribute } from "../models/attribute.js";
 import { getPlaylist, getPlaylistItems }  from "./playlist.js";
 import { Playlist } from "../models/playlist.js";
 import Playlists from "./storage.js";
@@ -19,6 +20,7 @@ const medals = {
     10: "Killionaire"
 };
 const playlists = new Playlists('playlists');
+const playlists2 = new Map();
 const weights = [
     {
         id: 1,
@@ -72,6 +74,7 @@ const weights = [
     }
 ];
 /* LETS */
+const attributes = new Map();
 let clips = [];
 let playlist = null;
 let currentId;
@@ -136,17 +139,6 @@ async function createPlaylist(id) {
         const playlist = new Playlist(id, name, videos);
         playlists.addPlaylist(playlist);
         playlists.save();
-    }
-}
-
-function createStorages() {
-    const storageNames = ['playlists', 'scores', 'weights'];
-    try {
-        for(const storageName of storageNames) {
-            localStorage.setItem(storageName, '[]');
-        }
-    } catch(error) {
-        console.error('Error creating storages.');
     }
 }
 
@@ -227,20 +219,35 @@ function handleWeightsSubmit(event) {
 async function initialize() {
     //console.log('initializing');
     // initialize view
-    if(sessionStorage.playlist && sessionStorage.clips) {
-        playlist = JSON.parse(sessionStorage.playlist);
-        clips = JSON.parse(sessionStorage.clips);
-        player.cuePlaylist({ listType: 'playlist', list: playlist.id });
-        updateTable(clips, weights);
-    }
+    load();
     View.createPlaylistsOptions(playlists.playlists.length);
     View.setPlaylistsOptions(playlists.playlists);
     View.playlistsButton.disabled = false;
-    View.updateWeightsList(weights);
-    View.createAttributesControls(weights.length);
+    View.updateWeightsList(attributes.get('Example'));
+    View.createAttributesControls(attributes.get('Example').length);
     View.updateAttributeControls(weights.map(weight => ({ name: weight.name, value: 0 })));
     // attach event listeners
     attachEventListeners();
+}
+
+
+function load() {
+    // check local storage for list of playlists
+    if(localStorage.playlists) {
+        JSON.parse(localStorage.playlists).forEach(item => {
+            const playlist = new Playlist(item.id, item.name, item.videos);
+            playlists2.set(playlist.id, playlist.videos);
+        });
+    }
+    // check local storage for list of attributes
+    if(localStorage.attributes) {
+        JSON.parse(localStorage.attributes).forEach(item => {
+            const list = item.list.map(item => new Attribute(item.name, item.count, item.weight));
+            attributes.set(item.name, list);
+        });
+    }
+    // check session storage for playlist, if not set playlist to null
+    // check session storage for attributes, if not set attributes to null
 }
 
 function onPlayerReady(event) {

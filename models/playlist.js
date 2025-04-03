@@ -8,6 +8,7 @@ export class Playlist {
     constructor(id, name, videos) {
         this.id = id;
         this.name = name;
-        this.videos = videos;
+        this.videos = new Map(videos.map(video => [video.id, { name: video.name, thumbnail: video.thumbnail }]));
     }
+
 }

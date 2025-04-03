@@ -5,7 +5,7 @@ export class View {
     static playlistsButton = document.querySelector('#playlists-button');
     static playlistsDialog = document.querySelector('#playlists');
     static playlistsList = this.playlistsDialog.querySelector('ul');
-    static rankingsTable = document.querySelector('#rankings');
+    static rankingsTable = document.querySelector('#videos');
     static weightsForm = document.querySelector('#weights');
     static weightsButton = this.weightsForm.querySelector('header button');
     static weightsInput = this.weightsForm.querySelector('#weight');
@@ -168,6 +168,7 @@ export class View {
     }
 
     static updateWeightsList(weights) {
+        console.log(weights)
         const items = weights.map(weight => {
             // create dom
             const input = document.createElement('input');
@@ -180,13 +181,13 @@ export class View {
             input.max = 10;
             input.min = -10;
             input.type = 'range';
-            input.value = weight.value;
+            input.value = weight.weight;
             // update label
             label.setAttribute('for', slug);
             label.textContent = weight.name;
             // update output
             output.setAttribute('for', slug);
-            output.textContent = weight.value;
+            output.textContent = weight.weight;
             // update li
             li.append(label, input, output);
             li.classList.add('control');

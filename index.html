@@ -14,7 +14,7 @@
             <button id="playlists-button" name="action" type="button" value="open" disabled>Playlists</button>
         </header>
         <main id="content">
-            <section>
+            <form id="rankings">
                 <header>
                     <h2>Rankings</h2>
                     <button class="chevron icon" type="button" name="action" value="close">Close</button>
@@ -23,7 +23,7 @@
                     <label class="sr-only" for="video">Video</label>
                     <input id="video" type="text" placeholder="Filter videos by name">
                 </div>
-                <table id="rankings">
+                <table id="videos">
                     <caption class="sr-only">Videos ranked according to weights</caption>
                     <thead class="sr-only">
                         <tr>
@@ -39,7 +39,7 @@
                     <button name="action" type="reset" value="reset">Reset</button>
                     <button name="action" type="submit" value="save">Save</button>
                 </div>
-            </section>
+            </form>
             <form id="weights">
                 <header>
                     <h2>Weights</h2>
@@ -86,11 +86,12 @@
                 </form>
                 <header>
                     <h3>Saved Playlists</h3>
-                    <button class="chevron icon" type="button" value="close">Close</button>
+                    <button class="chevron icon" name="toggle" type="button" value="close">Close</button>
                 </header>
                 <ul id="saved-playlists"></ul>
             </dialog>
         </main>
-        <script type="module" src="js/index.js"></script>
+        <!--<script type="module" src="js/index.js"></script>-->
+        <script type="module" src="js/application.js"></script>
     </body>
 </html>
