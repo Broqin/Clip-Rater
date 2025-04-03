@@ -6,6 +6,8 @@ export default class WeightsComponent {
 
     static {
         this.button.addEventListener('click', this.toggleWeights.bind(this));
+        this.form.addEventListener('input', this.updateRangeOutputs);
+        this.input.addEventListener('keyup', this.searchWeights.bind(this));
     }
 
     static createControls(weights) {
@@ -52,5 +54,17 @@ export default class WeightsComponent {
         const isClosed = this.button.value === 'close';
         this.button.value = isClosed ? 'open' : 'close';
         this.form.classList.toggle('hidden', isClosed);
+    }
+
+     static updateRangeOutputs(event) {
+        if(event.target.type !== 'range') return;
+        event.target.nextElementSibling.textContent = event.target.value;
+    }
+
+    static searchWeights(event) {
+        [...this.controls.children].forEach(control => {
+            const isValid = control.children[0].textContent.toLowerCase().includes(event.target.value.toLowerCase());
+            control.classList.toggle('hidden', !isValid);
+        });
     }
 }

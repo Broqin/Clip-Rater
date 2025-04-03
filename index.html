@@ -77,18 +77,38 @@
                     <h2>What playlist are we using?</h2>
                     <button class="close icon" name="action" value="close">Close</button>
                 </header>
+                <div class="search control">
+                    <label class="search icon">Search Playlists</label>
+                    <input type="text" placeholder="Search playlists...">
+                    <button class="close icon" type="button" value="reset">Reset</button>
+                </div>
+                <table>
+                    <caption class="sr-only">Saved Playlists</caption>
+                    <thead class="sr-only">
+                        <tr>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </dialog>
+            <dialog id="add-playlist">
+                <header>
+                    <h3>Add Playlist</h3>
+                </header>
                 <form method="dialog" class="search">
                     <label for="playlist">Fetch Playlist</label>
                     <input type="url" id="playlist" name="playlist"
-                        placeholder="https://www.youtube.com/playlist?list=PL43FMwNG9HjfIPlTrM2UKMGCnStuyV8yD">
+                        placeholder="Youtube playlist URL">
                     <button class="close icon" name="action" type="reset" value="Reset">Reset</button>
                     <button class="add icon" name="action" type="submit" value="add">Add</button>
                 </form>
-                <header>
-                    <h3>Saved Playlists</h3>
-                    <button class="chevron icon" name="toggle" type="button" value="close">Close</button>
-                </header>
-                <ul id="saved-playlists"></ul>
             </dialog>
         </main>
         <!--<script type="module" src="js/index.js"></script>-->

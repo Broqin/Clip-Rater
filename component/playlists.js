@@ -1,33 +1,47 @@
 export default class PlaylistsComponent {
     static button = document.querySelector('#playlists-button');
     static dialog = document.querySelector('#playlists');
-    static list = document.querySelector('#playlists ul');
-    static toggleButton = document.querySelector('#playlists button[name="toggle"]');
+    static input = document.querySelector('#playlists input');
+    static table = document.querySelector('#playlists table');
 
     static {
         this.button.addEventListener('click', event => this.dialog.showModal());
-        this.toggleButton.addEventListener('click', this.toggleOptions.bind(this));
-        console.log(this.toggleButton)
+        this.input.addEventListener('keyup', this.searchPlaylists.bind(this));
     }
 
     static createOptions(playlists) {
-        const options = [];
+        const rows = [];
         for(const [id, playlist] of playlists) {
-            const button = document.createElement('button');
-            const li = document.createElement('li');
-            button.name = 'playlist';
-            button.textContent = playlist.name;
-            button.value = id;
-            li.append(button);
-            options.push(li);
+            // create elements
+            const actionsCell = document.createElement('td');
+            const deleteButton = document.createElement('button');
+            const nameAnchor = document.createElement('a');
+            const nameCell = document.createElement('td');
+            const refreshButton = document.createElement('button');
+            const row = document.createElement('tr');
+            // update attributes
+            deleteButton.classList.add('delete' ,'icon');
+            deleteButton.textContent = 'Delete';
+            nameAnchor.href = '?playlist=' + id;
+            nameAnchor.textContent = playlist.name;
+            refreshButton.classList.add('sync', 'icon');
+            refreshButton.textContent = 'Refresh';
+            // compose elements
+            actionsCell.append(refreshButton, deleteButton);
+            nameCell.append(nameAnchor);
+            row.append(nameCell, actionsCell);
+            // push element into array
+            rows.push(row);
         }
-        this.list.replaceChildren(...options);
+        this.table.tBodies[0].replaceChildren(...rows);
     }
 
-    static toggleOptions(event) {
-        const isClosed = this.toggleButton.value === 'close';
-        this.toggleButton.value = isClosed ? 'open' : 'close';
-        this.list.classList.toggle('hidden', isClosed);
+    static searchPlaylists(event) {
+        [...this.table.tBodies[0].children].forEach(row => {
+            console.log(row)
+            const isValid = row.cells[0].children[0].textContent.toLowerCase().includes(event.target.value.toLowerCase());
+            row.classList.toggle('hidden', !isValid);
+        });
     }
 
 }

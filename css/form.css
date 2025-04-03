@@ -1,0 +1,122 @@
+button {
+    background-color: var(--brand-color);
+    border-radius: 0.5rem;
+    border: 0;
+    padding: var(--spacing);
+}
+
+button[type="reset"] {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+form {
+    display: grid;
+    gap: var(--spacing);
+}
+
+form.search {
+    gap: 0;
+    grid-template-areas: "input reset submit";
+    grid-template-columns: 1fr auto auto;
+}
+
+form.search button[type="reset"] {
+    border-radius: 0;
+}
+
+form.search button[value="add"] {
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+form.search button,
+form.search input {
+    background-color: var(--background-color);
+    border: 0;
+}
+
+form.search input {
+    border-radius: 0.5rem 0 0 0.5rem;
+}
+
+form.search label {
+    grid-column: 1 / -1;
+}
+
+form .buttons {
+    display: grid;
+    gap: var(--spacing);
+    grid-auto-flow: column;
+    place-content: end;
+}
+
+form .control {
+    display: grid;
+    gap: var(--spacing);
+    grid-template-rows: auto auto;
+}
+
+form .control input[type="number"] {
+    width: 10ch;
+}
+
+input[type="number"],
+input[type="text"] {
+    padding: var(--spacing);
+}
+
+input[type="range"] {
+    margin: 0;
+}
+
+input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"]) {
+    background-color: var(--background-color);
+    border-color: transparent;
+    border-radius: 0.5rem;
+}
+
+li.control {
+    padding-right: 1rem;
+}
+
+.buttons {
+    padding: var(--spacing);
+}
+
+.control {
+    padding: var(--spacing);
+    transition: background-color var(--animation-duration);
+}
+
+.control.search {
+    background-color: var(--background-color);
+    border-radius: 0.25rem;
+    display: grid;
+    grid-template-areas: "label input button";
+    grid-template-columns: max-content 1fr max-content;
+    padding: 0;
+}
+
+.control.search:focus-within {
+    outline: 1px solid var(--brand-color);
+}
+
+.control.search input:placeholder-shown ~ button[value="reset"] {
+    opacity: 0;
+}
+
+.control.search input {
+    border: 0;
+    outline: 0;
+}
+
+.control:has(label.sr-only) {
+    grid-template-areas: "input";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+}
+
+.control:has(input[type="range"]) {
+    grid-template-areas: "label output" "input input";
+    grid-template-columns: 1fr 2ch;
+}

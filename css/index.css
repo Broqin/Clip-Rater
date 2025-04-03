@@ -1,4 +1,5 @@
 @import url(base.css);
+@import url(form.css);
 
 button:disabled {
     background-color: oklch(53.24% 0 124.34);
@@ -7,13 +8,18 @@ button:disabled {
 :root {
     --animation-duration: 0.25s;
     --bronze-color: oklch(0.3 0.05 81);
-    --gold-color: oklch(0.3 0.05     95);
+    --gold-color: oklch(0.3 0.05 95);
     --hover-color: oklch(0.3 0 0);
     --silver-color: oklch(0.3 0 0);
-    --brand-color: oklch(53.24% 0.0424 124.34);
+    --brand-color: oklch(0.6 0.04 124);
     --background-color: oklch(0.1 0 0);
     --foreground-color: oklch(0.2 0 0);
     --spacing: 0.5rem;
+}
+
+a {
+    color: var(--brand-color);
+    text-decoration: none;
 }
 
 body {
@@ -23,18 +29,6 @@ body {
     height: 100vh;
     margin: 0;
     overflow: hidden;
-}
-
-button {
-    background-color: var(--brand-color);
-    border-radius: 0.5rem;
-    border-width: 0;
-    padding: var(--spacing);
-}
-
-button[type="reset"] {
-    background-color: transparent;
-    border-color: transparent;
 }
 
 caption {
@@ -54,7 +48,6 @@ dialog {
     border-radius: 0.5rem;
     border-width: 0;
     margin: var(--spacing);
-    min-width: min(50ch, 100%);
     padding: var(--spacing);
     place-self: center;
 }
@@ -66,56 +59,6 @@ dialog::backdrop {
 dialog[open] {
     display: grid;
     gap: var(--spacing);
-}
-
-form {
-    display: grid;
-    gap: var(--spacing);
-}
-
-form.search {
-    gap: 0;
-    grid-template-areas: "input reset submit";
-    grid-template-columns: 1fr auto auto;
-}
-
-form.search button[type="reset"] {
-    border-radius: 0;
-}
-
-form.search button[value="add"] {
-    border-radius: 0 0.5rem 0.5rem 0;
-}
-
-form.search button,
-form.search input {
-    background-color: var(--background-color);
-    border: 0;
-}
-
-form.search input {
-    border-radius: 0.5rem 0 0 0.5rem;
-}
-
-form.search label {
-    grid-column: 1 / -1;
-}
-
-form .buttons {
-    display: grid;
-    gap: var(--spacing);
-    grid-auto-flow: column;
-    place-content: end;
-}
-
-form .control {
-    display: grid;
-    gap: var(--spacing);
-    grid-template-rows: auto auto;
-}
-
-form .control input[type="number"] {
-    width: 10ch;
 }
 
 h1 {
@@ -140,84 +83,12 @@ img.loading {
     filter: blur(2px);
 }
 
-input[type="number"],
-input[type="text"] {
-    padding: var(--spacing);
-}
-
-input[type="range"] {
-    margin: 0;
-}
-
-input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"]) {
-    background-color: var(--background-color);
-    border-color: transparent;
-    border-radius: 0.5rem;
-}
-
-li.control {
-    padding-right: 1rem;
-}
-
 table {
     width: 100%;
 }
 
-table,
-tbody,
-tr {
-    display: grid;
-}
-
-table,
-tbody {
-    gap: 1px;
-}
-
-tbody tr {
-    grid-template-areas: "rank thumbnail name score" "rank thumbnail medal medal";
-    grid-template-columns: max-content max-content 1fr 4ch;
-    grid-template-rows: auto 1fr;
-}
-
 tbody tr:hover {
     background-color: oklch(1 0 0 / 0.1);
-}
-
-tbody tr:nth-child(1) {
-    background-color: var(--gold-color);
-}
-tbody tr:nth-child(2) {
-    background-color: var(--silver-color);
-}
-
-tbody tr:nth-child(3) {
-    background-color: var(--bronze-color);
-}
-
-td:has(img) {
-    grid-area: thumbnail;
-    padding: 0;
-}
-
-td:first-child {
-    grid-area: rank;
-}
-
-td:nth-child(3) {
-    grid-area: name;
-}
-
-td:last-child {
-    background-color: var(--brand-color);
-    grid-area: score;
-    padding: var(--spacing);
-    text-align: center;
-}
-
-tr {
-    gap: 0 var(--spacing);
-    padding: var(--spacing);
     transition: background-color 0.25s;
 }
 
@@ -271,16 +142,23 @@ tr {
     place-self: stretch;
 }
 
-#playlists input:placeholder-shown ~ button[type="reset"] {
-    background-size: 0 0;
+#playlists table,
+#playlist tbody,
+#playlists tbody tr {
+    display: grid;
 }
 
-#playlists ul {
-    display: flex;
-    gap: var(--spacing);
-    list-style: none;
-    margin: 0;
+#playlists tbody a {
+    display: block;
     padding: var(--spacing);
+}
+
+#playlists tbody tr {
+    grid-template-columns: 1fr max-content;
+}
+
+#playlists tbody tr.hidden {
+    display: none;
 }
 
 #rankings {
@@ -292,6 +170,60 @@ tr {
 #videos {
     grid-template-rows: auto auto 1fr;
     place-content: start stretch;
+}
+
+#videos table,
+#videos tbody,
+#videos tr {
+    display: grid;
+}
+
+#videos table,
+#videos tbody {
+    gap: 1px;
+}
+
+#videos tbody tr {
+    grid-template-areas: "rank thumbnail name score" "rank thumbnail medal medal";
+    grid-template-columns: max-content max-content 1fr 4ch;
+    grid-template-rows: auto 1fr;
+}
+
+#videos tbody tr:nth-child(1) {
+    background-color: var(--gold-color);
+}
+
+#videos tbody tr:nth-child(2) {
+    background-color: var(--silver-color);
+}
+
+#videos tbody tr:nth-child(3) {
+    background-color: var(--bronze-color);
+}
+
+#videos td:has(img) {
+    grid-area: thumbnail;
+    padding: 0;
+}
+
+#videos td:first-child {
+    grid-area: rank;
+}
+
+#videos td:nth-child(3) {
+    grid-area: name;
+}
+
+#videos td:last-child {
+    background-color: var(--brand-color);
+    grid-area: score;
+    padding: var(--spacing);
+    text-align: center;
+}
+
+#videos tr {
+    gap: 0 var(--spacing);
+    padding: var(--spacing);
 }
 
 #videos tbody {
@@ -358,30 +290,6 @@ tr {
     grid-area: output;
 }
 
-.buttons {
-    padding: var(--spacing);
-}
-
-.control {
-    padding: var(--spacing);
-    transition: background-color var(--animation-duration);
-}
-
-.control:focus-within {
-    background-color: var(--hover-color);
-}
-
-.control:has(label.sr-only) {
-    grid-template-areas: "input";
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-}
-
-.control:has(input[type="range"]) {
-    grid-template-areas: "label output" "input input";
-    grid-template-columns: 1fr 2ch;
-}
-
 .control.hidden,
 .hidden {
     display: none;
@@ -392,6 +300,7 @@ tr {
     border-width: 0;
     color: transparent;
     height: 2.5rem;
+    overflow: hidden;
     position: relative;
     width: 2.5rem;
 }
@@ -432,12 +341,20 @@ tr {
     background-image: url("../images/icons/close.png");
 }
 
+.icon.delete::before {
+    background-image: url("../images/icons/delete.png");
+}
+
 .icon.search::before {
     background-image: url("../images//icons/search.png");
 }
 
 .icon.tune::before {
     background-image: url("../images/icons/tune.png");
+}
+
+.icon.sync::before {
+    background-image: url("../images/icons/sync.png");
 }
 
 .pills {

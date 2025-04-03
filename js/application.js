@@ -18,12 +18,13 @@ class Application {
         this.loadWeightsCollection();
         // present playlists options
         View.playlists.createOptions(this.playlistsCollection.entries());
+        View.playlists.button.disabled = false;
         // which set from the collection is being used
         this.attributes = this.attributesCollection.get('Example');
         this.playlist = this.playlistsCollection.values().next().value;
         this.weights = this.weightsCollection.get('Example');
         // update view again
-        View.weights.createControls(this.weights.entries());
+        //View.weights.createControls(this.weights.entries());
         console.log(this.playlistsCollection, this.playlist)
         //console.log(this.attributes, this.weights);
     }
@@ -175,8 +176,6 @@ class Application {
             if(!this.isValidWeightsCollection(data)) {
                 throw new Error(`Invalid 'weights' collection.`)
             };
-
-            console.log(data)
 
             this.weightsCollection = new Map(data.map(collection => [collection.name, new Map(collection.weights.map(weight => [weight.name, weight.value]))]));
         } catch (error) {

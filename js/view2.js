@@ -19,15 +19,4 @@ export class View2 {
         if(!button) return;
         event.target.closest('dialog')?.close();
     }
-
-    static createRankingRows(rankings = []) {
-        const rows = [];
-        for(let i = 0; i < count; i++) {
-            const tr = document.createElement('tr');
-            const cells = this.createRankingCells();
-            tr.append(...cells);
-            rows.push(tr);
-        }
-        return rows;
-    }
 }
