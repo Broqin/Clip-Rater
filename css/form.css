@@ -43,13 +43,6 @@ form.search label {
     grid-column: 1 / -1;
 }
 
-form .buttons {
-    display: grid;
-    gap: var(--spacing);
-    grid-auto-flow: column;
-    place-content: end;
-}
-
 form .control input[type="number"] {
     width: 10ch;
 }
@@ -73,6 +66,14 @@ li.control {
     padding-right: 1rem;
 }
 
+#videos .buttons,
+#weights .buttons {
+    display: grid;
+    gap: var(--spacing);
+    grid-auto-flow: column;
+    place-content: end;
+}
+
 .buttons {
     padding: var(--spacing);
 }
@@ -89,6 +90,7 @@ li.control {
     display: grid;
     grid-template-areas: "label input button";
     grid-template-columns: max-content 1fr max-content;
+    margin: var(--spacing);
     padding: 0;
 }
 
@@ -115,4 +117,12 @@ li.control {
     gap: var(--spacing);
     grid-template-areas: "label output" "input input";
     grid-template-columns: 1fr 2ch;
+}
+
+.control:empty {
+    height: 4.5rem;
+}
+
+.control input[type="range"] {
+    height: 1.5rem;
 }

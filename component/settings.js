@@ -1,6 +1,6 @@
-export default class PlaylistsComponent {
+export default class SettingsComponent {
     static button = document.querySelector('#playlists-button');
-    static dialog = document.querySelector('#playlists');
+    static dialog = document.querySelector('#settings');
     static input = document.querySelector('#playlists input');
     static inputResetButton = document.querySelector('#playlists input ~ button[value="reset"]');
     static table = document.querySelector('#playlists table');

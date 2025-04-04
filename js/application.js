@@ -17,8 +17,8 @@ class Application {
         this.loadPlaylistsCollection();
         this.loadWeightsCollection();
         // present playlists options
-        View.playlists.createOptions(this.playlistsCollection.entries());
-        View.playlists.button.disabled = false;
+        View.settings.createOptions(this.playlistsCollection.entries());
+        View.settings.button.disabled = false;
         // which set from the collection is being used
         this.attributes = this.attributesCollection.get('Example');
         this.playlist = this.playlistsCollection.values().next().value;

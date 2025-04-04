@@ -11,7 +11,7 @@
     <body>
         <header id="header">
             <h1>Clip Ranker</h1>
-            <button id="playlists-button" name="action" type="button" value="open" disabled>Playlists</button>
+            <button id="playlists-button" name="action" type="button" value="open" disabled>Settings</button>
         </header>
         <main id="content">
             <section id="videos">
@@ -55,7 +55,9 @@
                         <input id="weight" type="text" placeholder="Filter weights by name">
                         <button class="close icon" type="button" value="reset"></button>
                     </div>
-                    <ul></ul>
+                    <ul>
+                        <li class="control"></li>
+                    </ul>
                     <div class="buttons">
                         <button name="action" type="reset" value="Reset">Reset</button>
                         <button name="action" type="submit" value="Apply">Apply</button>
@@ -79,31 +81,49 @@
                         </div>
                     </section>
             </dialog>
-            <dialog id="playlists">
+            <dialog id="settings">
                 <header>
-                    <h2>What playlist are we using?</h2>
+                    <h2>Settings</h2>
                     <button class="close icon" name="action" value="close">Close</button>
                 </header>
-                <div class="search control">
-                    <label class="search icon">Search Playlists</label>
-                    <input type="text" placeholder="Search playlists...">
-                    <button class="close icon" type="button" value="reset">Reset</button>
-                </div>
-                <table>
-                    <caption class="sr-only">Saved Playlists</caption>
-                    <thead class="sr-only">
-                        <tr>
-                            <th>Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="#">Attributes</a>
+                        </li>
+                        <li>
+                            <a href="#">Playlists</a>
+                        </li>
+                        <li>
+                            <a href="#">Appearance</a>
+                        </li>
+                    </ul>
+                </nav>
+                <section id="playlists">
+                    <header>
+                        <h3>Playlists</h3>
+                    </header>
+                    <div class="search control">
+                        <label class="search icon">Search Playlists</label>
+                        <input type="text" placeholder="Search playlists...">
+                        <button class="close icon" type="button" value="reset">Reset</button>
+                    </div>
+                    <table>
+                        <caption class="sr-only">Saved Playlists</caption>
+                        <thead class="sr-only">
+                            <tr>
+                                <th>Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
             </dialog>
             <dialog id="add-playlist">
                 <header>

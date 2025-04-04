@@ -9,10 +9,10 @@ button:disabled {
     --animation-duration: 0.25s;
     --bronze-color: oklch(0.3 0.05 81);
     --gold-color: oklch(0.3 0.05 95);
-    --hover-color: oklch(0.3 0 0);
+    --hover-color: oklch(0.25 0 0);
     --silver-color: oklch(0.3 0 0);
     --brand-color: oklch(0.6 0.04 124);
-    --background-color: oklch(0.1 0 0);
+    --background-color: oklch(0.15 0 0);
     --foreground-color: oklch(0.2 0 0);
     --spacing: 0.5rem;
 }
@@ -33,14 +33,6 @@ body {
 
 caption {
     padding: var(--spacing);
-}
-
-caption,
-header,
-tr,
-.buttons,
-.control {
-    background-color: var(--foreground-color);
 }
 
 dialog {
@@ -134,6 +126,10 @@ tbody tr:hover {
     max-width: 100vw;
 }
 
+#content > section {
+    background-color: var(--foreground-color);
+}
+
 #header {
     grid-template-columns: 1fr auto;
 }
@@ -161,10 +157,35 @@ tbody tr:hover {
     display: none;
 }
 
-#rankings {
-    display: grid;
-    gap: 1px;
-    place-content: start stretch;
+#settings {
+    gap: 0;
+    grid-template-areas: "header header" "nav section";
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    height: 50vh;
+    padding: 0;
+    width: min(100%, 75ch);
+}
+
+#settings > header:first-child {
+    border-bottom: 1px solid var(--hover-color);
+    grid-area: header;
+}
+
+#settings nav {
+    border-right: 1px solid var(--hover-color);
+    padding: var(--spacing);
+}
+
+#settings nav a {
+    display: block;
+    padding: var(--spacing);
+}
+
+#settings nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 #videos {
@@ -188,18 +209,6 @@ tbody tr:hover {
     grid-template-areas: "rank thumbnail name score" "rank thumbnail medal medal";
     grid-template-columns: max-content max-content 1fr 4ch;
     grid-template-rows: auto 1fr;
-}
-
-#videos tbody tr:nth-child(1) {
-    background-color: var(--gold-color);
-}
-
-#videos tbody tr:nth-child(2) {
-    background-color: var(--silver-color);
-}
-
-#videos tbody tr:nth-child(3) {
-    background-color: var(--bronze-color);
 }
 
 #videos td:has(img) {
@@ -232,7 +241,6 @@ tbody tr:hover {
 }
 
 #videos tr:has(td:empty) {
-    background-color: red;
     grid-template-areas: unset;
     grid-template-columns: none;
 }
