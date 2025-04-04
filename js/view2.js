@@ -1,9 +1,11 @@
 import PlaylistsComponent from "../component/playlists.js";
+import VideosComponent from "../component/videos.js";
 import WeightsComponent from "../component/weights.js";
 
 export class View2 {
 
     static playlists = PlaylistsComponent;
+    static videos = VideosComponent;
     static weights = WeightsComponent;
 
     static {

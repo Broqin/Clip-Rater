@@ -14,16 +14,17 @@
             <button id="playlists-button" name="action" type="button" value="open" disabled>Playlists</button>
         </header>
         <main id="content">
-            <form id="rankings">
+            <section id="videos">
                 <header>
-                    <h2>Rankings</h2>
+                    <h2>Videos</h2>
                     <button class="chevron icon" type="button" name="action" value="close">Close</button>
                 </header>
-                <div class="control">
-                    <label class="sr-only" for="video">Video</label>
+                <div class="search control">
+                    <label class="search icon" for="video">Video</label>
                     <input id="video" type="text" placeholder="Filter videos by name">
+                    <button class="close icon" type="button" value="reset"></button>
                 </div>
-                <table id="videos">
+                <table>
                     <caption class="sr-only">Videos ranked according to weights</caption>
                     <thead class="sr-only">
                         <tr>
@@ -33,44 +34,50 @@
                             <th>Score</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+                    </tbody>
                 </table>
                 <div class="buttons">   
                     <button name="action" type="reset" value="reset">Reset</button>
                     <button name="action" type="submit" value="save">Save</button>
                 </div>
-            </form>
-            <form id="weights">
-                <header>
-                    <h2>Weights</h2>
-                    <button class="chevron icon" type="button" name="action" value="close">Close</button>
-                </header>
-                <div class="control">
-                    <label class="sr-only" for="weight">Weight</label>
-                    <input id="weight" type="text" placeholder="Filter weights by name">
-                </div>
-                <ul></ul>
-                <div class="buttons">
-                    <button name="action" type="reset" value="Reset">Reset</button>
-                    <button name="action" type="submit" value="Apply">Apply</button>
-                </div>
-            </form>
-            <dialog id="clip">
-                <header>
-                    <h2>Clip</h2>
-                    <button class="close icon" name="action" value="close">Close</button>
-                </header>
-                <div id="player"></div>
-                <form id="attributes" method="dialog" disabled>
+            </section>
+            <section id="weights">
                     <header>
-                        <h3>Attributes</h3>
+                        <h2>Weights</h2>
+                        <button class="chevron icon" type="button" name="action" value="close">Close</button>
                     </header>
+                    <div class="search control">
+                        <label class="search icon" for="weight">Weight</label>
+                        <input id="weight" type="text" placeholder="Filter weights by name">
+                        <button class="close icon" type="button" value="reset"></button>
+                    </div>
                     <ul></ul>
                     <div class="buttons">
                         <button name="action" type="reset" value="Reset">Reset</button>
-                        <button name="action" type="submit" value="Submit">Apply</button>
+                        <button name="action" type="submit" value="Apply">Apply</button>
                     </div>
                 </form>
+                </section>
+                <dialog id="clip">
+                    <header>
+                        <h2>Clip</h2>
+                        <button class="close icon" name="action" value="close">Close</button>
+                    </header>
+                    <div id="player"></div>
+                    <section id="attributes" method="dialog">
+                        <header>
+                            <h3>Attributes</h3>
+                        </header>
+                        <ul></ul>
+                        <div class="buttons">
+                            <button name="action" type="reset" value="Reset">Reset</button>
+                            <button name="action" type="submit" value="Submit">Apply</button>
+                        </div>
+                    </section>
             </dialog>
             <dialog id="playlists">
                 <header>

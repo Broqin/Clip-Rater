@@ -168,7 +168,8 @@ tbody tr:hover {
 }
 
 #videos {
-    grid-template-rows: auto auto 1fr;
+    display: grid;
+    grid-template-rows: auto max-content 1fr auto;
     place-content: start stretch;
 }
 
@@ -230,6 +231,16 @@ tbody tr:hover {
     place-content: start stretch;
 }
 
+#videos tr:has(td:empty) {
+    background-color: red;
+    grid-template-areas: unset;
+    grid-template-columns: none;
+}
+
+#videos td:empty {
+    grid-area: unset;
+}
+
 #videos tbody tr,
 #videos thead tr {
     grid-template-columns: 4ch 120px 1fr 4ch;
@@ -252,12 +263,16 @@ tbody tr:hover {
     display: grid;
     gap: 1px;
     grid-template-rows: auto max-content 1fr auto;
-    height: 100%;
-    transition: height var(--animation-duration);
 }
 
+#videos.hidden,
 #weights.hidden {
     height: 3.5rem;
+}
+
+#weights.hidden > :not(header) {
+    opacity: 0;
+    transition: opacity 0.25s;
 }
 
 #weights header:first-child {
@@ -389,7 +404,7 @@ tbody tr:hover {
 @media (min-width: 1280px) {
 
     #content {
-        grid-template-columns: 1fr 15rem;
+        grid-template-columns: 1fr auto;
         place-content: stretch;
     }
 
@@ -398,7 +413,6 @@ tbody tr:hover {
     }
 
     #content,
-    #rankings,
     #videos,
     #weights,
     #weights form {
@@ -412,5 +426,11 @@ tbody tr:hover {
     #videos tbody,
     #weights ul{
         overflow: hidden auto;
+    }
+
+    #videos,
+    #weights {
+        height: 100%;
+        transition: height var(--animation-duration);
     }
 }

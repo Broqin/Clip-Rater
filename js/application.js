@@ -24,7 +24,7 @@ class Application {
         this.playlist = this.playlistsCollection.values().next().value;
         this.weights = this.weightsCollection.get('Example');
         // update view again
-        //View.weights.createControls(this.weights.entries());
+        View.weights.createControls(this.weights.entries());
         console.log(this.playlistsCollection, this.playlist)
         //console.log(this.attributes, this.weights);
     }

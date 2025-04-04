@@ -50,12 +50,6 @@ form .buttons {
     place-content: end;
 }
 
-form .control {
-    display: grid;
-    gap: var(--spacing);
-    grid-template-rows: auto auto;
-}
-
 form .control input[type="number"] {
     width: 10ch;
 }
@@ -84,6 +78,7 @@ li.control {
 }
 
 .control {
+    display: grid;
     padding: var(--spacing);
     transition: background-color var(--animation-duration);
 }
@@ -117,6 +112,7 @@ li.control {
 }
 
 .control:has(input[type="range"]) {
+    gap: var(--spacing);
     grid-template-areas: "label output" "input input";
     grid-template-columns: 1fr 2ch;
 }

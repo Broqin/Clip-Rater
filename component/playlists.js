@@ -39,7 +39,6 @@ export default class PlaylistsComponent {
     }
 
     static searchPlaylists(event) {
-        const value = event ? event.target.value.toLowerCase() : '';
         [...this.table.tBodies[0].children].forEach(row => {
             const isValid = row.cells[0].children[0].textContent.toLowerCase().includes(value);
             row.classList.toggle('hidden', !isValid);
