@@ -19,13 +19,14 @@ class Application {
         // present playlists options
         View.settings.createOptions(this.playlistsCollection.entries());
         View.settings.button.disabled = false;
+        View.videos.createPlaylistOptions(this.playlistsCollection.entries());
         // which set from the collection is being used
         this.attributes = this.attributesCollection.get('Example');
         this.playlist = this.playlistsCollection.values().next().value;
         this.weights = this.weightsCollection.get('Example');
         // update view again
         View.weights.createControls(this.weights.entries());
-        View.settings.table.addEventListener('click', this.setPlaylist.bind(this));
+        View.videos.playlists.addEventListener('change', this.setPlaylist.bind(this));
     }
 
     static isValidAttributesCollection(collection) {
@@ -183,12 +184,8 @@ class Application {
     }
 
     static setPlaylist(event) {
-        console.log('clicked')
-        const row = event.target.closest('tr');
-        if(!row) return;
-        const button = row.querySelector('button[name="playlist"]');
-        if(!button) return;
-        this.playlist = this.playlistsCollection.get(button.value);
+        console.log('changed')
+        this.playlist = this.playlistsCollection.get(event.target.value);
         View.videos.createRows(this.playlist.videos);
     }
 

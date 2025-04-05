@@ -1,11 +1,22 @@
 export default class VideosComponent {
 
     static section = document.querySelector('#videos');
+    static playlists = document.querySelector('#videos select');
     static table = document.querySelector('#videos table');
-    static toggleButton = document.querySelector('#videos button[value="close"]');
 
     static {
-        this.toggleButton.addEventListener('click', this.toggle.bind(this));
+
+    }
+
+    static createPlaylistOptions(playlists) {
+        const options = [];
+        for(const [id, playlist] of playlists) {
+            const option = document.createElement('option');
+            option.textContent = playlist.name;
+            option.value = id;
+            options.push(option);
+        }
+        this.playlists.replaceChildren(...options);
     }
 
     static createRows(videos) {
@@ -38,12 +49,6 @@ export default class VideosComponent {
             cells.push(td);
         }
         return [cells[1], cells[0]];
-    }
-
-    static toggle(event) {
-        const isClosed = this.toggleButton.value === 'close';
-        this.toggleButton.value = isClosed ? 'open' : 'close';
-        this.section.classList.toggle('hidden', isClosed);
     }
 
 }

@@ -186,6 +186,12 @@ tbody tr:hover {
     place-content: start stretch;
 }
 
+#videos > header,
+#weights > header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+}
+
 #videos table {
     grid-auto-rows: max-content;
 }
