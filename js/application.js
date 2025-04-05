@@ -20,13 +20,16 @@ class Application {
         View.settings.createOptions(this.playlistsCollection.entries());
         View.settings.button.disabled = false;
         View.videos.createPlaylistOptions(this.playlistsCollection.entries());
+        View.weights.createOptions(this.weightsCollection.entries());
         // which set from the collection is being used
         this.attributes = this.attributesCollection.get('Example');
         this.playlist = this.playlistsCollection.values().next().value;
         this.weights = this.weightsCollection.get('Example');
+        console.log(this.weightsCollection)
         // update view again
         View.weights.createControls(this.weights.entries());
         View.videos.playlists.addEventListener('change', this.setPlaylist.bind(this));
+        View.weights.select.addEventListener('change', this.setWeights.bind (this));
     }
 
     static isValidAttributesCollection(collection) {
@@ -184,9 +187,13 @@ class Application {
     }
 
     static setPlaylist(event) {
-        console.log('changed')
         this.playlist = this.playlistsCollection.get(event.target.value);
         View.videos.createRows(this.playlist.videos);
+    }
+
+    static setWeights(event) {
+        this.weights = this.weightsCollection.get(event.target.value);
+        View.weights.createControls(this.weights.entries());
     }
 
 }

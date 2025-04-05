@@ -1,11 +1,12 @@
 export default class VideosComponent {
 
-    static section = document.querySelector('#videos');
+    static input = document.querySelector('#videos input');
     static playlists = document.querySelector('#videos select');
+    static section = document.querySelector('#videos');
     static table = document.querySelector('#videos table');
 
     static {
-
+        this.input.addEventListener('keyup', this.#filterVideos.bind(this));
     }
 
     static createPlaylistOptions(playlists) {
@@ -49,6 +50,14 @@ export default class VideosComponent {
             cells.push(td);
         }
         return [cells[1], cells[0]];
+    }
+
+    static #filterVideos(event) {
+        for(const row of this.table.tBodies[0].rows) {
+            console.log(row.cells[2].textContent)
+            const isMatch = row.cells[2].textContent.toLowerCase().includes(event.target.value.toLowerCase());
+            row.classList.toggle('hidden', !isMatch);
+        }
     }
 
 }

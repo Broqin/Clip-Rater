@@ -1,11 +1,10 @@
 export default class WeightsComponent {
-    static button = document.querySelector('#weights button');
     static controls = document.querySelector('#weights ul');
     static form = document.querySelector('#weights');
     static input = document.querySelector('#weight');
+    static select = document.querySelector('#weights select');
 
     static {
-        this.button.addEventListener('click', this.toggleWeights.bind(this));
         this.form.addEventListener('input', this.updateRangeOutputs);
         this.input.addEventListener('keyup', this.searchWeights.bind(this));
     }
@@ -34,6 +33,17 @@ export default class WeightsComponent {
         this.controls.replaceChildren(...controls);
     }
 
+    static createOptions(weights) {
+        const options = [];
+        for(const [id, attributes] of weights) {
+            const option = document.createElement('option');
+            option.textContent = id;
+            option.value = id;
+            options.push(option);
+        }
+        this.select.replaceChildren(...options);
+    }
+
     static setControls(weights = []) {
         console.log(weights)
         const controls = this.weightControls.children;
@@ -48,12 +58,6 @@ export default class WeightsComponent {
                 }
             }
         }
-    }
-
-    static toggleWeights(event) {
-        const isClosed = this.button.value === 'close';
-        this.button.value = isClosed ? 'open' : 'close';
-        this.form.classList.toggle('hidden', isClosed);
     }
 
      static updateRangeOutputs(event) {

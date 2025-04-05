@@ -193,17 +193,17 @@ tbody tr:hover {
 }
 
 #videos table {
-    grid-auto-rows: max-content;
+    grid-template-rows: auto 1fr;
 }
 
 #videos table,
 #videos tbody,
 #videos thead,
-#videos tr {
+#videos tr:not(.hidden) {
     display: grid;
 }
 
-#videos tr {
+#videos tr:not(.hidden) {
     gap: 0 var(--spacing);
     grid-template-columns: 4ch 120px 1fr 4ch;
     padding: var(--spacing);
@@ -385,13 +385,15 @@ tbody tr:hover {
 
     #content,
     #videos,
+    #videos table,
     #weights,
     #weights form {
         overflow: hidden;
     }
 
+    #videos table,
     #videos tbody {
-        min-height: 5rem;
+        height: 100%;
     }
 
     #videos tbody,
