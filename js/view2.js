@@ -14,11 +14,20 @@ export class View2 {
 
     static #attachListeners() {
         window.addEventListener('click', this.#closeDialog);
+        window.addEventListener('click', this.#resetSearchControl);
     }
 
     static #closeDialog(event) {
         const button = event.target.closest('button[name="action"][value="close"]');
         if(!button) return;
         event.target.closest('dialog')?.close();
+    }
+
+    static #resetSearchControl(event) {
+        const control = event.target.closest('.search.control');
+        if(!control) return;
+        const input = control.querySelector('input');
+        if(!input) return;
+        input.value = '';
     }
 }

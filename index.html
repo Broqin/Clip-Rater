@@ -70,9 +70,9 @@
                         <button class="close icon" name="action" value="close">Close</button>
                     </header>
                     <div id="player"></div>
-                    <section id="attributes" method="dialog">
+                    <section id="add-attributes">
                         <header>
-                            <h3>Attributes</h3>
+                            <h3>Add Attributes</h3>
                         </header>
                         <ul></ul>
                         <div class="buttons">
@@ -86,22 +86,43 @@
                     <h2>Settings</h2>
                     <button class="close icon" name="action" value="close">Close</button>
                 </header>
-                <nav>
-                    <ul>
-                        <li>
-                            <a href="#">Attributes</a>
-                        </li>
-                        <li>
-                            <a href="#">Playlists</a>
-                        </li>
-                        <li>
-                            <a href="#">Appearance</a>
-                        </li>
-                    </ul>
-                </nav>
-                <section id="playlists">
+                <menu>
+                    <li>
+                        <button type="button" value="attributes">Attributes</button>
+                    </li>
+                    <li>
+                        <button type="button" value="playlists">Playlists</button>
+                    </li>
+                    <li>
+                        <button type="button" value="appearance">Appearance</button>
+                    </li>
+                </menu>
+                <section id="attributes">
+                    <header>
+                        <h3>Attributes</h3>
+                        <button type="button" class="add icon">Add Attributes</button>
+                    </header>
+                    <table>
+                        <caption class="sr-only">Saved Attributes</caption>
+                        <thead class="sr-only">
+                            <tr>
+                                <th>Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <textarea placeholder="attributes, are, comma, separated" rows="2"></textarea>
+                </section>
+                <section id="playlists" class="hidden">
                     <header>
                         <h3>Playlists</h3>
+                        <button type="button" class="add icon" title="Add playlist" value="add">Add Playlist</button>
                     </header>
                     <div class="search control">
                         <label class="search icon">Search Playlists</label>
@@ -123,19 +144,24 @@
                             </tr>
                         </tbody>
                     </table>
+                    <section class="hidden">
+                        <header>
+                            <h4>Add Playlist</h4>
+                        </header>
+                        <form method="dialog" class="search">
+                            <label for="playlist">Fetch Playlist</label>
+                            <input type="url" id="playlist" name="playlist"
+                                placeholder="Youtube playlist URL">
+                            <button class="close icon" name="action" type="reset" value="Reset">Reset</button>
+                            <button class="add icon" name="action" type="submit" value="add">Add</button>
+                        </form>
+                    </section>
                 </section>
-            </dialog>
-            <dialog id="add-playlist">
-                <header>
-                    <h3>Add Playlist</h3>
-                </header>
-                <form method="dialog" class="search">
-                    <label for="playlist">Fetch Playlist</label>
-                    <input type="url" id="playlist" name="playlist"
-                        placeholder="Youtube playlist URL">
-                    <button class="close icon" name="action" type="reset" value="Reset">Reset</button>
-                    <button class="add icon" name="action" type="submit" value="add">Add</button>
-                </form>
+                <section id="appearance" class="hidden">
+                    <header>
+                        <h3>Appearance</h3>
+                    </header>
+                </section>
             </dialog>
         </main>
         <!--<script type="module" src="js/index.js"></script>-->

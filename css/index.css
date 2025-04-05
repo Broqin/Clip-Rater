@@ -84,22 +84,6 @@ tbody tr:hover {
     transition: background-color 0.25s;
 }
 
-#attributes {
-    display: grid;
-    grid-template-rows: max-content 1fr max-content;
-    overflow: hidden;
-}
-
-#attributes ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing);
-    margin: 0;
-    overflow: hidden scroll;
-    padding: var(--spacing);
-    padding-right: 1rem;
-}
-
 #clip {
     grid-template-rows: auto auto 1fr;
     width: min(656px, 100%);
@@ -159,7 +143,7 @@ tbody tr:hover {
 
 #settings {
     gap: 0;
-    grid-template-areas: "header header" "nav section";
+    grid-template-areas: "header header" "menu section";
     grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
     height: 50vh;
@@ -172,20 +156,28 @@ tbody tr:hover {
     grid-area: header;
 }
 
-#settings nav {
+#settings menu {
+    display: grid;
     border-right: 1px solid var(--hover-color);
-    padding: var(--spacing);
-}
-
-#settings nav a {
-    display: block;
-    padding: var(--spacing);
-}
-
-#settings nav ul {
+    gap: var(--spacing);
+    grid-auto-rows: max-content;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: var(--spacing);
+}
+
+#settings menu button {
+    text-align: start;
+    width: 100%;
+}
+
+#settings menu li {
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+#settings > section {
+    grid-area: section;
 }
 
 #videos {
@@ -395,6 +387,10 @@ tbody tr:hover {
     font-size: 0.75rem;
     text-transform: capitalize;
     padding: var(--spacing);
+}
+
+.selected {
+    background-color: var(--hover-color);
 }
 
 .sr-only {
