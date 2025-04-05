@@ -186,45 +186,20 @@ tbody tr:hover {
     place-content: start stretch;
 }
 
+#videos table {
+    grid-auto-rows: max-content;
+}
+
 #videos table,
 #videos tbody,
+#videos thead,
 #videos tr {
     display: grid;
 }
 
-#videos table,
-#videos tbody {
-    gap: 1px;
-}
-
-#videos tbody tr {
-    grid-template-areas: "rank thumbnail name score" "rank thumbnail medal medal";
-    grid-template-columns: max-content max-content 1fr 4ch;
-    grid-template-rows: auto 1fr;
-}
-
-#videos td:has(img) {
-    grid-area: thumbnail;
-    padding: 0;
-}
-
-#videos td:first-child {
-    grid-area: rank;
-}
-
-#videos td:nth-child(3) {
-    grid-area: name;
-}
-
-#videos td:last-child {
-    background-color: var(--brand-color);
-    grid-area: score;
-    padding: var(--spacing);
-    text-align: center;
-}
-
 #videos tr {
     gap: 0 var(--spacing);
+    grid-template-columns: 4ch 120px 1fr 4ch;
     padding: var(--spacing);
 }
 
@@ -241,22 +216,8 @@ tbody tr:hover {
     grid-area: unset;
 }
 
-#videos tbody tr,
-#videos thead tr {
-    grid-template-columns: 4ch 120px 1fr 4ch;
-}
-
-#videos tbody tr {
-    grid-template-areas: "rank thumbnail name score" "rank thumbnail medal medal";
-    grid-template-rows: minmax(2.5rem, auto) 1fr;
-}
-
 #videos tbody tr:focus-within {
     background-color: var(--hover-color);
-}
-
-#videos tbody tr:hover {
-    cursor: pointer;
 }
 
 #weights {

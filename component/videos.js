@@ -8,44 +8,36 @@ export default class VideosComponent {
         this.toggleButton.addEventListener('click', this.toggle.bind(this));
     }
 
-    // { id: 0, name: 'x', }
-    static createRankingCells(video) {
-        const cells = [];
-        for(let i = 0; i < 5; i++) {
-            const cell = document.createElement('td');
-            switch(i) {
-                case 1:
-                    const image = document.createElement('img');
-                    image.classList.add('loading');
-                    image.height = 90;
-                    image.onload = event => image.classList.remove('loading');
-                    image.width = 120;
-                    cell.append(image);
-                    break;
-                case 2:
-                    const anchor = document.createElement('a');
-                    cell.append(anchor);
-                    break;
-                case 3:
-                    const list = document.createElement('ul');
-                    list.classList.add('pills');
-                    cell.append(list);
-                    break;
-            }  
-            cells.push(cell);
-        }
-        return cells;
-    }
-
-    static createRankingRows(count) {
+    static createRows(videos) {
+        let position = 1;
         const rows = [];
-        for(let i = 0; i < count; i++) {
+        for(const [id, video] of videos) {
             const tr = document.createElement('tr');
-            const cells = this.createRankingCells();
-            tr.append(...cells);
+            const positionCell = document.createElement('td');
+            positionCell.textContent = position++;
+            const cells = this.createCells(video);
+            tr.append(positionCell, ...cells);
             rows.push(tr);
         }
-        return rows;
+        this.table.tBodies[0].replaceChildren(...rows);
+    }
+
+    static createCells(video) {
+        const cells = [];
+        for(const property in video) {
+            const td = document.createElement('td');
+            if(property === 'thumbnails') {
+                const thumbnail = document.createElement('img');
+                thumbnail.classList.add('loading');
+                thumbnail.src = video.thumbnails.default.url;
+                thumbnail.onload = event => thumbnail.classList.remove('loading');
+                td.append(thumbnail);
+            } else {
+                td.textContent = video[property];
+            }
+            cells.push(td);
+        }
+        return [cells[1], cells[0]];
     }
 
     static toggle(event) {

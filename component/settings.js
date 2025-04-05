@@ -21,20 +21,21 @@ export default class SettingsComponent {
             // create elements
             const actionsCell = document.createElement('td');
             const deleteButton = document.createElement('button');
-            const nameAnchor = document.createElement('a');
+            const nameButton = document.createElement('button');
             const nameCell = document.createElement('td');
             const refreshButton = document.createElement('button');
             const row = document.createElement('tr');
             // update attributes
             deleteButton.classList.add('delete' ,'icon');
             deleteButton.textContent = 'Delete';
-            nameAnchor.href = '/?playlist=' + id;
-            nameAnchor.textContent = playlist.name;
+            nameButton.name = 'playlist';
+            nameButton.textContent = playlist.name;
+            nameButton.value = id;
             refreshButton.classList.add('sync', 'icon');
             refreshButton.textContent = 'Refresh';
             // compose elements
             actionsCell.append(refreshButton, deleteButton);
-            nameCell.append(nameAnchor);
+            nameCell.append(nameButton);
             row.append(nameCell, actionsCell);
             // push element into array
             rows.push(row);
