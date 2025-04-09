@@ -79,6 +79,7 @@ table {
     width: 100%;
 }
 
+tbody tr:focus-within,
 tbody tr:hover {
     background-color: oklch(1 0 0 / 0.1);
     transition: background-color 0.25s;

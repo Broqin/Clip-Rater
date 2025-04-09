@@ -10,19 +10,20 @@
     </head>
     <body>
         <header id="header">
-            <h1>Clip Ranker</h1>
+            <h1>Video Ranker</h1>
             <button id="playlists-button" name="action" type="button" value="open" disabled>Settings</button>
         </header>
         <main id="content">
             <section id="videos">
                 <header>
                     <h2>Videos</h2>
+                    <label class="sr-only">Collection</label>
                     <select></select>
                 </header>
                 <div class="search control">
                     <label class="search icon" for="video">Video</label>
                     <input id="video" type="text" placeholder="Filter videos by name">
-                    <button class="close icon" type="button" value="reset"></button>
+                    <button class="close icon" type="button" value="reset">Reset</button>
                 </div>
                 <table>
                     <caption class="sr-only">Videos ranked according to weights</caption>
@@ -34,11 +35,7 @@
                             <th>Score</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="4"></td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
                 <div class="buttons">   
                     <button name="action" type="reset" value="reset">Reset</button>
@@ -48,16 +45,15 @@
             <section id="weights">
                     <header>
                         <h2>Weights</h2>
+                        <label class="sr-only">Collection</label>
                         <select></select>
                     </header>
                     <div class="search control">
                         <label class="search icon" for="weight">Weight</label>
                         <input id="weight" type="text" placeholder="Filter weights by name">
-                        <button class="close icon" type="button" value="reset"></button>
+                        <button class="close icon" type="button" value="reset">Reset</button>
                     </div>
-                    <ul>
-                        <li class="control"></li>
-                    </ul>
+                    <ul></ul>
                     <div class="buttons">
                         <button name="action" type="reset" value="Reset">Reset</button>
                         <button name="action" type="submit" value="Apply">Apply</button>
@@ -88,7 +84,7 @@
                 </header>
                 <menu>
                     <li>
-                        <button type="button" value="attributes">Attributes</button>
+                        <button type="button" value="weights">Weights</button>
                     </li>
                     <li>
                         <button type="button" value="playlists">Playlists</button>
@@ -97,13 +93,18 @@
                         <button type="button" value="appearance">Appearance</button>
                     </li>
                 </menu>
-                <section id="attributes">
+                <section id="weights-manager">
                     <header>
-                        <h3>Attributes</h3>
-                        <button type="button" class="add icon">Add Attributes</button>
+                        <h3>Weights</h3>
+                        <button type="button" class="add icon">Add Weights</button>
                     </header>
+                    <div class="search control">
+                        <label class="search icon">Search Weight Collections</label>
+                        <input type="text" placeholder="Search collections of weights...">
+                        <button class="close icon" type="button" value="reset">Reset</button>
+                    </div>
                     <table>
-                        <caption class="sr-only">Saved Attributes</caption>
+                        <caption class="sr-only">Saved Weights</caption>
                         <thead class="sr-only">
                             <tr>
                                 <th>Name</th>
@@ -117,16 +118,16 @@
                             </tr>
                         </tbody>
                     </table>
-                    <textarea placeholder="attributes, are, comma, separated" rows="2"></textarea>
+                    <textarea placeholder="weights, are, comma, separated" rows="2"></textarea>
                 </section>
-                <section id="playlists" class="hidden">
+                <section id="playlists-manager" class="hidden">
                     <header>
                         <h3>Playlists</h3>
                         <button type="button" class="add icon" title="Add playlist" value="add">Add Playlist</button>
                     </header>
                     <div class="search control">
                         <label class="search icon">Search Playlists</label>
-                        <input type="text" placeholder="Search playlists...">
+                        <input id="playlists" type="text" placeholder="Search playlists...">
                         <button class="close icon" type="button" value="reset">Reset</button>
                     </div>
                     <table>
@@ -157,7 +158,7 @@
                         </form>
                     </section>
                 </section>
-                <section id="appearance" class="hidden">
+                <section id="appearance-manager" class="hidden">
                     <header>
                         <h3>Appearance</h3>
                     </header>

@@ -4,66 +4,42 @@ import  { View2 as View } from "./view2.js";
 
 class Application {
 
-    static attributes = null;
-    static attributesCollection = null; // [{ name: 'example', attributes: [] }, ...]
     static playlist = null;
     static playlistsCollection = null; // [{ name: 'example', videos: [] }, ...]
     static video = null;
     static weightsCollection = null; // [{ name: 'example', value: 0 }, ...]
+    static weights = null;
 
     static {
         // get collections
-        this.loadAttributesCollection();
         this.loadPlaylistsCollection();
         this.loadWeightsCollection();
+
+        const playlist = sessionStorage.getItem('playlist');
+        if(playlist) {
+            this.playlist = this.playlistsCollection.get(playlist);
+            View.videos.createRows(this.playlist.videos);
+        }
+
+        const weights = sessionStorage.getItem('weights');
+        if(weights) {
+            this.weights = this.weightsCollection.get(weights);
+            View.weights.createControls(this.weights.entries());
+        }
+
         // present playlists options
         View.settings.createOptions(this.playlistsCollection.entries());
+        View.settings.createWeights(this.weightsCollection.entries());
         View.settings.button.disabled = false;
         View.videos.createPlaylistOptions(this.playlistsCollection.entries());
         View.weights.createOptions(this.weightsCollection.entries());
-        // which set from the collection is being used
-        this.attributes = this.attributesCollection.get('Example');
-        this.playlist = this.playlistsCollection.values().next().value;
-        this.weights = this.weightsCollection.get('Example');
-        console.log(this.weightsCollection)
-        // update view again
-        View.weights.createControls(this.weights.entries());
         View.videos.playlists.addEventListener('change', this.setPlaylist.bind(this));
         View.weights.select.addEventListener('change', this.setWeights.bind (this));
-    }
-
-    static isValidAttributesCollection(collection) {
-        try {
-            // check if the collection is an array
-            if(!Array.isArray(collection)) {
-                throw new Error('Collection must be an array.');
+        window.addEventListener('keyup', event => {
+            if(event.key === 'Tab') {
+                console.log('focused element', document.activeElement)
             }
-            // check if the collection has required properties and types
-            collection.forEach((item, index) => {
-                if(typeof item !== 'object') {
-                    throw new Error(`Item at index ${index} must be an object.`);
-                }
-
-                if(typeof item.name !== 'string') {
-                    throw new Error(`Item at index ${index} must have a 'name' property with a string for a value.`);
-                }
-
-                if(!Array.isArray(item.attributes)) {
-                    throw new Error(`Item at index ${index} must have a 'attributes' property with an array for a value.`);
-                }
-
-                item.attributes.forEach((item, index) => {
-                    if(typeof item !== 'string') {
-                        throw new Error(`Item at index ${index} in 'attributes' must be an string.`);
-                    }
-                });
-
-            });
-
-            return true;
-        } catch(error) {
-            console.error('Error validationg attributes collection', error.message);
-        }
+        })
     }
 
     static isValidWeightsCollection(collection) {
@@ -100,29 +76,6 @@ class Application {
             return true;
         } catch(error) {
             console.error('Error validating weights collection.', error.message);
-        }
-    }
-
-    // [{ name: 'example', attributes: [] }, ...]
-    static loadAttributesCollection() {
-        try {
-            const storage = localStorage.getItem('attributes');
-            if(!storage) {
-                throw new Error(`No 'attributes' in local storage.`);
-            }
-
-            const data = JSON.parse(storage);
-            if(!data) {
-                throw new Error(`Could not parse 'attributes' from local storage.`);
-            }
-
-            if(!this.isValidAttributesCollection(data)) {
-                throw new Error(`Invalid 'attributes' collection.`)
-            };
-
-            this.attributesCollection = new Map(data.map(collection => [collection.name, new Set(collection.attributes)]));
-        } catch (error) {
-            console.error('Error loading attributes collection.', error.message);
         }
     }
 
@@ -188,11 +141,13 @@ class Application {
 
     static setPlaylist(event) {
         this.playlist = this.playlistsCollection.get(event.target.value);
+        sessionStorage.setItem('playlist', event.target.value);
         View.videos.createRows(this.playlist.videos);
     }
 
     static setWeights(event) {
         this.weights = this.weightsCollection.get(event.target.value);
+        sessionStorage.setItem('weights', event.target.value);
         View.weights.createControls(this.weights.entries());
     }
 

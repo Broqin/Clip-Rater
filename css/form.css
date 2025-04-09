@@ -66,6 +66,13 @@ li.control {
     padding-right: 1rem;
 }
 
+select {
+    background-color: var(--background-color);
+    border: 0;
+    border-radius: 0.25rem;
+    padding: var(--spacing);
+}
+
 textarea {
     background-color: var(--background-color);
     border: 0;
@@ -102,6 +109,7 @@ textarea {
     padding: 0;
 }
 
+select:focus-within,
 .control.search:focus-within {
     outline: 1px solid var(--brand-color);
 }

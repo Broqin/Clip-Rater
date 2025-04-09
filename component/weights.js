@@ -66,7 +66,9 @@ export default class WeightsComponent {
     }
 
     static searchWeights(event) {
-        [...this.controls.children].forEach(control => {
+        const controls = [...this.controls.children];
+        if(!controls);
+        controls.forEach(control => {
             const isValid = control.children[0].textContent.toLowerCase().includes(event.target.value.toLowerCase());
             control.classList.toggle('hidden', !isValid);
         });

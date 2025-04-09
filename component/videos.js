@@ -44,6 +44,10 @@ export default class VideosComponent {
                 thumbnail.src = video.thumbnails.default.url;
                 thumbnail.onload = event => thumbnail.classList.remove('loading');
                 td.append(thumbnail);
+            } else if(property === 'name') {
+                const button = document.createElement('button');
+                button.textContent = video[property];
+                td.append(button);
             } else {
                 td.textContent = video[property];
             }
